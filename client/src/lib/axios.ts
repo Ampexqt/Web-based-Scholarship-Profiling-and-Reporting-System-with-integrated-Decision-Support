@@ -1,7 +1,21 @@
 import axios from 'axios';
 
-// You can set the base URL from your environment variables
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// Dynamically determine the backend URL based on the current hostname.
+// This allows the app to work seamlessly on localhost, local IP (for mobile testing), and production.
+const getApiUrl = () => {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  if (import.meta.env.PROD) {
+    return '/api'; // Use relative path in production
+  }
+  
+  // In development, point to the backend running on port 3000 of the same host
+  return `http://${window.location.hostname}:3000/api`;
+};
+
+const API_URL = getApiUrl();
 
 export const apiClient = axios.create({
   baseURL: API_URL,
