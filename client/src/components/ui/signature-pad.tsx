@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 import { useFormContext } from 'react-hook-form';
-import { Button } from './button';
+
 import { Eraser, PenTool } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
