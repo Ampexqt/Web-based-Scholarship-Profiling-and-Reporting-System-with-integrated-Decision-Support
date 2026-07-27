@@ -25,6 +25,12 @@
       "skillPath": "SKILL.md",
       "computedHash": "0f039cf367e8f72ca25d27e503e8a68f26210c6bbe31ed51c86d7263ecfe5f74"
     },
+    "qa": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/deprecated/qa/SKILL.md",
+      "computedHash": "bd0c413e93b2c36b06d8467c29934ab65af329ef33679edb92cacc359a2d2eb6"
+    },
     "rest-api-design": {
       "source": "aj-geddes/useful-ai-prompts",
       "sourceType": "github",
