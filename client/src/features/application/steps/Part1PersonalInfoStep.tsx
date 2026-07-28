@@ -12,31 +12,31 @@ export default function Part1PersonalInfoStep() {
         <p className="text-sm text-muted-foreground">Please provide your basic details accurately.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="space-y-2">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="space-y-2 md:col-span-1">
           <label className="text-sm font-medium text-foreground">Student ID No <span className="text-destructive">*</span></label>
           <input {...register("studentId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           {errors.studentId && <p className="text-xs text-destructive">{errors.studentId.message}</p>}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-        <div className="space-y-2 md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Last Name <span className="text-destructive">*</span></label>
           <input {...register("lastName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Given Name <span className="text-destructive">*</span></label>
           <input {...register("givenName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           {errors.givenName && <p className="text-xs text-destructive">{errors.givenName.message}</p>}
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-foreground">Middle Name</label>
             <label className="flex items-center space-x-2 text-xs cursor-pointer">
               <input type="checkbox" {...register("noMiddleName")} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
-              <span className="text-muted-foreground">I don't have a middle name</span>
+              <span className="text-muted-foreground">None</span>
             </label>
           </div>
           <input 
@@ -45,7 +45,7 @@ export default function Part1PersonalInfoStep() {
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:bg-muted" 
           />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Extension</label>
           <select {...register("extension")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <option value="">None</option>
@@ -59,8 +59,8 @@ export default function Part1PersonalInfoStep() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="space-y-2 md:col-span-2 lg:col-span-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Course <span className="text-destructive">*</span></label>
           <input {...register("course")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
           {errors.course && <p className="text-xs text-destructive">{errors.course.message}</p>}
@@ -78,7 +78,7 @@ export default function Part1PersonalInfoStep() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Sex <span className="text-destructive">*</span></label>
           <select {...register("sex")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -109,7 +109,7 @@ export default function Part1PersonalInfoStep() {
           <label className="text-sm font-medium text-foreground">Place of Birth <span className="text-destructive">*</span></label>
           <input {...register("placeOfBirth")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
         </div>
-        <div className="space-y-2 md:col-span-3">
+        <div className="space-y-2 md:col-span-2">
           <label className="text-sm font-medium text-foreground">Religion <span className="text-destructive">*</span></label>
           <input {...register("religion")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
         </div>
@@ -142,7 +142,7 @@ export default function Part1PersonalInfoStep() {
 
       <div className="border-t border-border pt-8">
         <h3 className="text-lg font-serif font-bold mb-4">Current Address</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">House/Lot/Block <span className="text-destructive">*</span></label>
             <input {...register("currentHouseBlock")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
@@ -182,7 +182,7 @@ export default function Part1PersonalInfoStep() {
         </div>
         
         {!sameAsCurrentAddress && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in-up">
             <div className="space-y-2">
               <label className="text-sm font-medium text-foreground">House/Lot/Block <span className="text-destructive">*</span></label>
               <input {...register("permanentHouseBlock")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
