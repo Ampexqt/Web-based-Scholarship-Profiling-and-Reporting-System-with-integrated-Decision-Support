@@ -27,13 +27,13 @@ export default function DashboardPage() {
           className="lg:col-span-1"
         />
         <StatCard 
-          title="Qualified" 
+          title="Accepted" 
           value={824} 
           icon={<CheckCircle className="w-4 h-4" />} 
           className="lg:col-span-1"
         />
         <StatCard 
-          title="Ineligible" 
+          title="Rejected" 
           value={82} 
           icon={<FileX className="w-4 h-4" />} 
           className="lg:col-span-1"
