@@ -112,7 +112,8 @@ Their responsibilities include:
 - Verify applicant information.
 - Validate uploaded documents.
 - Process scholarship applications.
-- Mark applications as Pending, Qualified, Ineligible, or Rejected.
+- Review applications categorized initially as "Pending Review" or "Flagged".
+- Mark evaluated applications as Accepted or Rejected, providing necessary feedback when an application is rejected.
 - Record remarks and observations.
 - Review Decision Support recommendations.
 - Generate scholarship reports.
@@ -125,7 +126,7 @@ Administrators have full system privileges.
 
 Their responsibilities include:
 
-- Manage Staff accounts.
+- Manage Staff accounts (including creating new accounts for staff members).
 - Manage system users.
 - Upload official scholarship beneficiary records.
 - Manage scholarship-related data.
@@ -150,18 +151,17 @@ These uploaded records may include official qualified scholar lists from scholar
 - CHED
 - Other recognized scholarship programs
 
-When the system detects that an applicant appears in one of these uploaded records, it generates a notification indicating a potential match.
+When the system detects that an applicant appears in one of these uploaded records, it generates a notification and marks the application as "Flagged" for a potential match. All other new applications are marked as "Pending Review".
 
 The Staff reviews the flagged application before making the final decision.
 
 Possible actions include:
 
 - Continue Processing
-- Mark as Ineligible
-- Reject the application
+- Reject the application (providing necessary feedback)
 - Request further verification
 
-Possible reasons for marking an application as **Ineligible** include:
+Possible reasons for rejecting an application include:
 
 - Already a TES beneficiary.
 - Already a CHED scholar.
@@ -202,7 +202,7 @@ The proposed system includes the following major functionalities:
 
 ### Reporting
 
-- Generate scholarship reports.
+- Generate scholarship reports (accessed via a dedicated Reports dashboard).
 - Applicant statistics.
 - Scholarship summaries.
 - Application status reports.
