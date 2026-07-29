@@ -10,24 +10,24 @@ const recentApplications = [
     id: "APP-2026-0842",
     name: "Dela Cruz, Juan M.",
     course: "BS Information Technology",
-    status: "Pending",
-    date: "2026-07-28",
+    status: "Pending Review",
+    date: "Jul 28, 2026, 10:30 AM",
     isPriority: false,
   },
   {
     id: "APP-2026-0843",
     name: "Reyes, Maria C.",
     course: "BS Civil Engineering",
-    status: "Pending",
-    date: "2026-07-28",
+    status: "Pending Review",
+    date: "Jul 28, 2026, 09:15 AM",
     isPriority: true,
   },
   {
     id: "APP-2026-0840",
     name: "Santos, Mark J.",
     course: "BS Business Administration",
-    status: "Verified",
-    date: "2026-07-27",
+    status: "Pending Review",
+    date: "Jul 27, 2026, 02:45 PM",
     isPriority: false,
   },
   {
@@ -35,15 +35,15 @@ const recentApplications = [
     name: "Garcia, Ana L.",
     course: "BS Accountancy",
     status: "Flagged",
-    date: "2026-07-27",
+    date: "Jul 27, 2026, 11:20 AM",
     isPriority: false,
   },
   {
     id: "APP-2026-0835",
     name: "Mendoza, Paul R.",
     course: "BS Information Technology",
-    status: "Pending",
-    date: "2026-07-26",
+    status: "Pending Review",
+    date: "Jul 26, 2026, 08:50 AM",
     isPriority: true,
   }
 ]
@@ -67,6 +67,7 @@ export default function RecentApplicationsTable() {
               <TableHead className="w-[120px] pl-6">App ID</TableHead>
               <TableHead>Applicant Name</TableHead>
               <TableHead className="hidden md:table-cell">Course</TableHead>
+              <TableHead className="hidden md:table-cell">Date Submitted</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right pr-6">Action</TableHead>
             </TableRow>
@@ -84,13 +85,17 @@ export default function RecentApplicationsTable() {
                   </div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground">{app.course}</TableCell>
+                <TableCell className="hidden md:table-cell text-muted-foreground">{app.date}</TableCell>
                 <TableCell>
                   <Badge 
                     variant={
-                      app.status === 'Verified' ? 'default' :
                       app.status === 'Flagged' ? 'destructive' :
-                      app.status === 'Pending' ? 'secondary' :
+                      app.status === 'Pending Review' ? 'secondary' :
                       'outline'
+                    }
+                    className={
+                      app.status === 'Flagged' ? 'bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20 border' :
+                      app.status === 'Pending Review' ? 'bg-secondary hover:bg-secondary/80 text-secondary-foreground border-transparent' : ''
                     }
                   >
                     {app.status}
