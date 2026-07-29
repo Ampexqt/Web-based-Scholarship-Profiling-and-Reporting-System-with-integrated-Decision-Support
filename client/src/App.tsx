@@ -5,6 +5,11 @@ import ApplicationWizard from './features/application/ApplicationWizard';
 import LoginPage from './features/auth/LoginPage';
 import AdminLayout from './features/admin/layouts/AdminLayout';
 import DashboardPage from './features/admin/pages/DashboardPage';
+import ApplicationsPage from './features/admin/pages/ApplicationsPage';
+import DecisionSupportPage from './features/admin/pages/DecisionSupportPage';
+import ReportsPage from './features/admin/pages/ReportsPage';
+import AuditLogsPage from './features/admin/pages/AuditLogsPage';
+import StaffManagementPage from './features/admin/pages/StaffManagementPage';
 
 function App() {
   return (
@@ -17,6 +22,11 @@ function App() {
           
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="applications" element={<ApplicationsPage />} />
+            <Route path="decision-support" element={<DecisionSupportPage />} />
+            <Route path="reports" element={<ReportsPage />} />
+            <Route path="audit-logs" element={<AuditLogsPage />} />
+            <Route path="staff-management" element={<StaffManagementPage />} />
             {/* Add more nested admin routes here later */}
           </Route>
         </Routes>
