@@ -107,7 +107,20 @@ export default function Part4HouseholdCompositionStep() {
                 )}
               </div>
 
-              <div className="space-y-2"><label className="text-xs font-medium">Monthly Income (if any)</label><input {...register(`householdMembers.${index}.monthlyIncome`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+              <div className="space-y-2">
+                <label className="text-xs font-medium">Monthly Income (if any)</label>
+                <select {...register(`householdMembers.${index}.monthlyIncome`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm">
+                  <option value="">Select Bracket</option>
+                  <option value="No Income">No Income</option>
+                  <option value="Less than P11,000">Less than P11,000</option>
+                  <option value="P11,000 - P21,999">P11,000 - P21,999</option>
+                  <option value="P22,000 - P43,999">P22,000 - P43,999</option>
+                  <option value="P44,000 - P76,999">P44,000 - P76,999</option>
+                  <option value="P77,000 - P131,999">P77,000 - P131,999</option>
+                  <option value="P132,000 - P219,999">P132,000 - P219,999</option>
+                  <option value="P220,000 and Above">P220,000 and Above</option>
+                </select>
+              </div>
               <div className="space-y-2"><label className="text-xs font-medium">Currently Studying?</label><select {...register(`householdMembers.${index}.currentlyStudying`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"><option value="Yes">Yes</option><option value="No">No</option></select></div>
             </div>
           </div>
