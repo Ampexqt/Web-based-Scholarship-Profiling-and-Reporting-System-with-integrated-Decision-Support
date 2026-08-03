@@ -100,11 +100,11 @@ export default function AdminLayout() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <SidebarMenuButton size="lg" className="text-destructive hover:text-destructive group-data-[collapsible=icon]:!text-destructive" tooltip="Sign Out">
-                      <LogOut />
-                      <span className="text-sm group-data-[collapsible=icon]:hidden">Sign Out</span>
-                    </SidebarMenuButton>
+                  <AlertDialogTrigger render={
+                    <SidebarMenuButton size="lg" className="text-destructive hover:text-destructive group-data-[collapsible=icon]:!text-destructive" tooltip="Sign Out" />
+                  }>
+                    <LogOut />
+                    <span className="text-sm group-data-[collapsible=icon]:hidden">Sign Out</span>
                   </AlertDialogTrigger>
                   <AlertDialogContent className="sm:max-w-[425px] p-8">
                     <div className="flex flex-col items-center text-center space-y-5">
