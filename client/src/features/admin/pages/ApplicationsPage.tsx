@@ -16,14 +16,14 @@ import { Link } from "react-router-dom";
 
 // Mock Data
 const MOCK_APPLICATIONS = [
-  { id: "APP-2026-0842", name: "Dela Cruz, Juan M.", course: "BS Information Technology", date: "Jul 28, 2026, 10:30 AM", status: "Pending Review" },
-  { id: "APP-2026-0843", name: "Reyes, Maria C.", course: "BS Civil Engineering", date: "Jul 28, 2026, 09:15 AM", status: "Flagged" },
-  { id: "APP-2026-0840", name: "Santos, Mark J.", course: "BS Business Administration", date: "Jul 27, 2026, 02:45 PM", status: "Pending Review" },
-  { id: "APP-2026-0839", name: "Garcia, Ana L.", course: "BS Accountancy", date: "Jul 27, 2026, 11:20 AM", status: "Flagged" },
-  { id: "APP-2026-0835", name: "Mendoza, Paul R.", course: "BS Information Technology", date: "Jul 25, 2026, 08:50 AM", status: "Pending Review" },
-  { id: "APP-2026-0831", name: "Bautista, Luis T.", course: "BS Mechanical Engineering", date: "Jul 24, 2026, 04:15 PM", status: "Pending Review" },
-  { id: "APP-2026-0829", name: "Flores, Angela D.", course: "BS Accountancy", date: "Jul 24, 2026, 01:05 PM", status: "Pending Review" },
-  { id: "APP-2026-0822", name: "Villanueva, Jose S.", course: "BS Civil Engineering", date: "Jul 23, 2026, 09:30 AM", status: "Flagged" },
+  { id: "APP-2026-0842", name: "Dela Cruz, Juan M.", college: "College of Information and Computing Sciences", course: "BS Information Technology", date: "Jul 28, 2026, 10:30 AM", status: "Pending Review" },
+  { id: "APP-2026-0843", name: "Reyes, Maria C.", college: "College of Engineering and Technology", course: "BS Civil Engineering", date: "Jul 28, 2026, 09:15 AM", status: "Flagged" },
+  { id: "APP-2026-0840", name: "Santos, Mark J.", college: "School of Business Administration", course: "BS Business Administration", date: "Jul 27, 2026, 02:45 PM", status: "Pending Review" },
+  { id: "APP-2026-0839", name: "Garcia, Ana L.", college: "School of Business Administration", course: "BS Accountancy", date: "Jul 27, 2026, 11:20 AM", status: "Flagged" },
+  { id: "APP-2026-0835", name: "Mendoza, Paul R.", college: "College of Information and Computing Sciences", course: "BS Information Technology", date: "Jul 25, 2026, 08:50 AM", status: "Pending Review" },
+  { id: "APP-2026-0831", name: "Bautista, Luis T.", college: "College of Engineering and Technology", course: "BS Mechanical Engineering", date: "Jul 24, 2026, 04:15 PM", status: "Pending Review" },
+  { id: "APP-2026-0829", name: "Flores, Angela D.", college: "School of Business Administration", course: "BS Accountancy", date: "Jul 24, 2026, 01:05 PM", status: "Pending Review" },
+  { id: "APP-2026-0822", name: "Villanueva, Jose S.", college: "College of Engineering and Technology", course: "BS Civil Engineering", date: "Jul 23, 2026, 09:30 AM", status: "Flagged" },
 ];
 
 export default function ApplicationsPage() {
@@ -95,6 +95,7 @@ export default function ApplicationsPage() {
               <TableRow className="hover:bg-transparent border-b border-border">
                 <TableHead className="font-semibold text-muted-foreground w-[130px]">App ID</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Applicant Name</TableHead>
+                <TableHead className="font-semibold text-muted-foreground">College</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Course</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Date Submitted</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
@@ -113,6 +114,7 @@ export default function ApplicationsPage() {
                   <TableRow key={app.id} className="group hover:bg-muted/20 transition-colors border-b border-border">
                     <TableCell className="font-mono text-sm font-medium text-foreground">{app.id}</TableCell>
                     <TableCell className="font-medium text-foreground">{app.name}</TableCell>
+                    <TableCell className="text-muted-foreground">{app.college}</TableCell>
                     <TableCell className="text-muted-foreground">{app.course}</TableCell>
                     <TableCell className="text-muted-foreground">{app.date}</TableCell>
                     <TableCell>{getStatusBadge(app.status)}</TableCell>
