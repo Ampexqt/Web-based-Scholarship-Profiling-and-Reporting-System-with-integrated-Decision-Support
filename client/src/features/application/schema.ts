@@ -8,7 +8,9 @@ export const applicationSchema = z.object({
   middleName: z.string().optional(),
   noMiddleName: z.boolean().optional(),
   extension: z.string().optional(),
+  college: z.string().min(1, "College is required"),
   course: z.string().min(1, "Course is required"),
+  major: z.string().optional(),
   yearLevel: z.string().min(1, "Year level is required"),
   sex: z.enum(["Male", "Female"]),
   age: z.string().min(1, "Age is required"),
@@ -45,6 +47,7 @@ export const applicationSchema = z.object({
   // PART II. HOUSEHOLD INFORMATION
   headFullName: z.string().min(1, "Household head name is required"),
   headRelationship: z.string().min(1, "Relationship is required"),
+  headRelationshipOthers: z.string().optional(),
   totalMembers: z.string().min(1, "Total members is required"),
   monthlyIncome: z.string().min(1, "Monthly income is required"),
   mainSourceOfIncome: z.string().min(1, "Source of income is required"),
