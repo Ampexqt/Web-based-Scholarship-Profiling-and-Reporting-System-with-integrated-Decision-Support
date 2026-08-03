@@ -49,7 +49,17 @@ export default function Part2HouseholdInfoStep() {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Total Estimated Monthly Household Income <span className="text-destructive">*</span></label>
-          <input type="number" {...register("monthlyIncome")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <select {...register("monthlyIncome")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select Income Bracket</option>
+            <option value="No Income">No Income</option>
+            <option value="Less than P11,000">Less than P11,000</option>
+            <option value="P11,000 - P21,999">P11,000 - P21,999</option>
+            <option value="P22,000 - P43,999">P22,000 - P43,999</option>
+            <option value="P44,000 - P76,999">P44,000 - P76,999</option>
+            <option value="P77,000 - P131,999">P77,000 - P131,999</option>
+            <option value="P132,000 - P219,999">P132,000 - P219,999</option>
+            <option value="P220,000 and Above">P220,000 and Above</option>
+          </select>
         </div>
       </div>
 
