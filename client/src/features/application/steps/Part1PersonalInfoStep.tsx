@@ -1,9 +1,37 @@
+import { useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
 import type { ApplicationFormValues } from '../schema';
+import { academicStructure } from '../data/academicStructure';
 
 export default function Part1PersonalInfoStep() {
-  const { register, watch, formState: { errors } } = useFormContext<ApplicationFormValues>();
+  const { register, watch, setValue, formState: { errors } } = useFormContext<ApplicationFormValues>();
   const sameAsCurrentAddress = watch("sameAsCurrentAddress");
+
+  const selectedCollege = watch("college");
+  const selectedCourse = watch("course");
+
+  const collegeObj = academicStructure.find(c => c.name === selectedCollege);
+  const programs = collegeObj ? collegeObj.programs : [];
+  
+  const courseObj = programs.find(p => p.name === selectedCourse);
+  const majors = courseObj ? courseObj.majors : [];
+
+  useEffect(() => {
+    if (selectedCollege && !programs.find(p => p.name === selectedCourse)) {
+      setValue("course", "");
+      setValue("major", "");
+    }
+  }, [selectedCollege, programs, selectedCourse, setValue]);
+
+  useEffect(() => {
+    if (selectedCourse && courseObj) {
+      if (courseObj.majors.length === 1) {
+        setValue("major", courseObj.majors[0]);
+      } else if (!courseObj.majors.includes(watch("major") || "")) {
+        setValue("major", "");
+      }
+    }
+  }, [selectedCourse, courseObj, setValue, watch]);
 
   return (
     <div className="space-y-10 animate-fade-in-up">
@@ -32,18 +60,16 @@ export default function Part1PersonalInfoStep() {
           {errors.givenName && <p className="text-xs text-destructive">{errors.givenName.message}</p>}
         </div>
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-foreground">Middle Name</label>
-            <label className="flex items-center space-x-2 text-xs cursor-pointer">
-              <input type="checkbox" {...register("noMiddleName")} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
-              <span className="text-muted-foreground">None</span>
-            </label>
-          </div>
+          <label className="text-sm font-medium text-foreground">Middle Name</label>
           <input 
             {...register("middleName")} 
             disabled={watch("noMiddleName")}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:bg-muted" 
           />
+          <label className="flex items-center space-x-2 text-xs cursor-pointer pt-1">
+            <input type="checkbox" {...register("noMiddleName")} className="rounded border-border text-primary focus:ring-primary h-4 w-4" />
+            <span className="text-muted-foreground">Check if you do not have a middle name</span>
+          </label>
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Extension</label>
@@ -61,10 +87,41 @@ export default function Part1PersonalInfoStep() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-foreground">Course <span className="text-destructive">*</span></label>
-          <input {...register("course")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <label className="text-sm font-medium text-foreground">College <span className="text-destructive">*</span></label>
+          <select {...register("college")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select College</option>
+            {academicStructure.map(college => (
+              <option key={college.name} value={college.name}>{college.name}</option>
+            ))}
+          </select>
+          {errors.college && <p className="text-xs text-destructive">{errors.college.message}</p>}
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-foreground">Course / Program <span className="text-destructive">*</span></label>
+          <select {...register("course")} disabled={!selectedCollege} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:bg-muted">
+            <option value="">Select Course</option>
+            {programs.map(prog => (
+              <option key={prog.name} value={prog.name}>{prog.name}</option>
+            ))}
+          </select>
           {errors.course && <p className="text-xs text-destructive">{errors.course.message}</p>}
         </div>
+        {majors.length > 0 && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">Major <span className="text-destructive">*</span></label>
+            <select 
+              {...register("major")} 
+              disabled={majors.length === 1}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 disabled:bg-muted"
+            >
+              <option value="">Select Major</option>
+              {majors.map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+            {errors.major && <p className="text-xs text-destructive">{errors.major.message}</p>}
+          </div>
+        )}
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Year Level <span className="text-destructive">*</span></label>
           <select {...register("yearLevel")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
