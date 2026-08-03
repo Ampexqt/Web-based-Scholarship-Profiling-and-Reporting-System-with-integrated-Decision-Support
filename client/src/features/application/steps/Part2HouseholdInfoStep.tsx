@@ -6,6 +6,7 @@ export default function Part2HouseholdInfoStep() {
   
   const mainSourceOfIncome = watch("mainSourceOfIncome");
   const govAssistance = watch("govAssistance");
+  const headRelationship = watch("headRelationship");
 
   return (
     <div className="space-y-10 animate-fade-in-up">
@@ -21,7 +22,26 @@ export default function Part2HouseholdInfoStep() {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Relationship to Applicant <span className="text-destructive">*</span></label>
-          <input {...register("headRelationship")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <select {...register("headRelationship")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <option value="">Select Relationship</option>
+            <option value="Father">Father</option>
+            <option value="Mother">Mother</option>
+            <option value="Guardian">Guardian</option>
+            <option value="Sibling">Sibling</option>
+            <option value="Grandparent">Grandparent</option>
+            <option value="Spouse">Spouse</option>
+            <option value="Others">Others</option>
+          </select>
+          {headRelationship === "Others" && (
+            <div className="mt-2 animate-fade-in-up">
+              <input 
+                {...register("headRelationshipOthers")} 
+                placeholder="Please specify relationship" 
+                className="flex h-10 w-full rounded-md border border-primary/50 bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary shadow-sm" 
+                autoFocus
+              />
+            </div>
+          )}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Total Number of Household Members <span className="text-destructive">*</span></label>
