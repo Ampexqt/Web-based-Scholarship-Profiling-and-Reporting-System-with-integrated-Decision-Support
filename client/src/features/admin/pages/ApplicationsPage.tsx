@@ -13,6 +13,15 @@ import { Input } from "@/components/ui/input";
 import { Search, FileText, Filter } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  DropdownMenuGroup,
+} from "@/components/ui/dropdown-menu";
 
 // Mock Data
 const MOCK_APPLICATIONS = [
@@ -29,13 +38,16 @@ const MOCK_APPLICATIONS = [
 export default function ApplicationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [filterCollege, setFilterCollege] = useState("All");
 
   const filteredApplications = MOCK_APPLICATIONS.filter(app => {
     const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.id.toLowerCase().includes(searchTerm.toLowerCase());
+      
+    const matchesCollege = filterCollege === "All" || app.college === filterCollege;
 
-    if (activeTab === "all") return matchesSearch;
-    return matchesSearch && app.status.toLowerCase() === activeTab;
+    if (activeTab === "all") return matchesSearch && matchesCollege;
+    return matchesSearch && matchesCollege && app.status.toLowerCase() === activeTab;
   });
 
   const getStatusBadge = (status: string) => {
@@ -82,9 +94,44 @@ export default function ApplicationsPage() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="outline" size="icon" className="shrink-0 border-border hover:bg-muted text-foreground">
-              <Filter className="h-4 w-4" />
-            </Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger render={
+                <Button variant="outline" size="icon" className="shrink-0 border-border hover:bg-muted text-foreground" />
+              }>
+                <Filter className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel>Filter by College</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuCheckboxItem
+                    checked={filterCollege === "All"}
+                    onCheckedChange={() => setFilterCollege("All")}
+                  >
+                    All Colleges
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={filterCollege === "College of Information and Computing Sciences"}
+                    onCheckedChange={() => setFilterCollege("College of Information and Computing Sciences")}
+                  >
+                    College of Information and Computing Sciences
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={filterCollege === "College of Engineering and Technology"}
+                    onCheckedChange={() => setFilterCollege("College of Engineering and Technology")}
+                  >
+                    College of Engineering and Technology
+                  </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    checked={filterCollege === "School of Business Administration"}
+                    onCheckedChange={() => setFilterCollege("School of Business Administration")}
+                  >
+                    School of Business Administration
+                  </DropdownMenuCheckboxItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
