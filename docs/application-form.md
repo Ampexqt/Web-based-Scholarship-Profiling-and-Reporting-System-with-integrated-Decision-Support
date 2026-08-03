@@ -6,6 +6,13 @@ Last Name:
 Given Name: 
 Middle Name: 
 Ext.: 
+College:
+[ ] College of Engineering and Technology
+[ ] College of Information and Computing Sciences
+[ ] College of Teacher Education
+[ ] School of Business Administration
+[ ] College of Arts, Humanities and Social Sciences
+
 Course: 
 Year Level: 
 Sex: 
