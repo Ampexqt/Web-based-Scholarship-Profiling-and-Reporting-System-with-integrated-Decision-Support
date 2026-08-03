@@ -6,14 +6,9 @@ Last Name:
 Given Name: 
 Middle Name: 
 Ext.: 
-College:
-[ ] College of Engineering and Technology
-[ ] College of Information and Computing Sciences
-[ ] College of Teacher Education
-[ ] School of Business Administration
-[ ] College of Arts, Humanities and Social Sciences
-
-Course: 
+College: [Dropdown - Select College (Refer to academic-structure-reference.md)]
+Course/Program: [Dynamic Dropdown - Populates based on selected College]
+Major: [Dynamic Field - Auto-fills if only 1 major exists; Dropdown if multiple; Hidden if none]
 Year Level: 
 Sex: 
 [ ] Male
