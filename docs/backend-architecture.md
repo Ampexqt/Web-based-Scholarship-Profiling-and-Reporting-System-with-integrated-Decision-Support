@@ -30,7 +30,8 @@ server/
 │   ├── app.ts       # Express app setup and middleware registration
 │   └── server.ts    # Entry point that starts the HTTP server
 ├── .env             # Secret environment variables (DB connection string, JWT secrets)
-└── package.json     # Backend dependencies and run scripts
+├── package.json     # Backend dependencies and run scripts
+└── uploads/         # Organized physical storage for application files (images, PDFs) and digital signatures
 ```
 
 ## Data Flow (How a Request Works)
