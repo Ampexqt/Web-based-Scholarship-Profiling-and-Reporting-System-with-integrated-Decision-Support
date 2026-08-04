@@ -5,6 +5,7 @@ Student ID No:
 Last Name: 
 Given Name: 
 Middle Name: 
+[ ] Check if no middle name
 Ext.: 
 College: [Dropdown - Select College (Refer to academic-structure-reference.md)]
 Course/Program: [Dynamic Dropdown - Populates based on selected College]
@@ -23,28 +24,30 @@ Civil Status:
 [ ] Separated
 
 Place of Birth: 
-Religion: (List of Religion)
+Religion: [Dropdown: Roman Catholic, Islam, Iglesia ni Cristo, Born Again Christian, Aglipayan, Seventh Day Adventist, Others]
+If Others: [Input: Please specify Religion]
+
 Mobile Number: 
 Email Address: 
 
 Current Address
-- House/Lot/Block Number: 
-- Street/Purok: 
-- Barangay: 
-- Municipality/City: 
-- Province: 
-- Region: 
+- House/Lot/Block Number: (Optional)
+- Street/Purok: (Optional)
+- Region: [Dropdown]
+- Province: [Dropdown - Auto-populates]
+- Municipality/City: [Dropdown - Auto-populates]
+- Barangay: [Dropdown - Auto-populates]
 - ZIP Code: 
 
 Permanent Address
 [ ] Same as Current Address
 If No:
-- House/Lot/Block Number: 
-- Street/Purok: 
-- Barangay: 
-- Municipality/City: 
-- Province: 
-- Region: 
+- House/Lot/Block Number: (Optional)
+- Street/Purok: (Optional)
+- Region: [Dropdown]
+- Province: [Dropdown - Auto-populates]
+- Municipality/City: [Dropdown - Auto-populates]
+- Barangay: [Dropdown - Auto-populates]
 - ZIP Code: 
 
 Enrollment Information
@@ -92,6 +95,7 @@ FATHER
 Family Name: 
 Given Name: 
 Middle Name: 
+[ ] Check if no middle name
 Ext.: 
 
 Living Status:
@@ -157,6 +161,7 @@ MOTHER'S MAIDEN NAME
 Family Name: 
 Given Name: 
 Middle Name: 
+[ ] Check if no middle name
 
 Living Status:
 [ ] Living
