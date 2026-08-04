@@ -60,7 +60,8 @@ Endpoints for managing scholarship applications.
 Submit a new scholarship application.
 
 - **Headers:** `Authorization: Bearer <token>`
-- **Request Body:** Full application schema (PersonalInfo, AcademicDetails, etc.)
+- **Content-Type:** `multipart/form-data` (Required for file uploads and base64 signature)
+- **Request Body:** Form data fields mapped to the application schema. Files are appended alongside text fields.
 - **Response (201 Created):**
   ```json
   {
