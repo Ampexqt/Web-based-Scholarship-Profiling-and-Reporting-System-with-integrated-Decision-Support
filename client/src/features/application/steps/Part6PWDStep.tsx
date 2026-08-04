@@ -49,8 +49,8 @@ export default function Part6PWDStep() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2"><label className="text-xs font-medium">PWD ID Number</label><input {...register("pwdIdNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-            <div className="space-y-2"><label className="text-xs font-medium">Issuing LGU</label><input {...register("pwdLgu")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">PWD ID Number</label><input placeholder="e.g. 12-3456" {...register("pwdIdNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Issuing LGU</label><input placeholder="e.g. Zamboanga City" {...register("pwdLgu")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
             <div className="space-y-2"><label className="text-xs font-medium">Date Issued</label><input type="date" {...register("pwdDateIssued")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
             <div className="space-y-2"><label className="text-xs font-medium">Expiration Date</label><input type="date" {...register("pwdExpiration")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           </div>
