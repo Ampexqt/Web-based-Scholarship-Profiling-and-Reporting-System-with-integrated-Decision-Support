@@ -16,3 +16,55 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Application {
+  id                Int      @id @default(autoincrement())
+  referenceNumber   String   @unique
+  studentId         String
+  lastName          String
+  givenName         String
+  middleName        String?
+  college           String
+  course            String
+  status            String   @default("Pending")
+  
+  // Grouped JSON data to easily store the remaining 70+ fields
+  personalInfo      Json     
+  addressInfo       Json
+  householdInfo     Json
+  parentGuardianInfo Json
+  householdMembers  Json     
+  academicInfo      Json
+  specialCircumstances Json
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model ph_regions {
+  code              String @id
+  name              String
+  region_name       String
+  island_group_code String
+}
+
+model ph_provinces {
+  code        String @id
+  name        String
+  region_code String
+}
+
+model ph_cities {
+  code          String @id
+  name          String
+  region_code   String
+  province_code String?
+}
+
+model ph_barangays {
+  code          String @id
+  name          String
+  region_code   String
+  province_code String?
+  city_code     String?
+}
