@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { applicationSchema, type ApplicationFormValues } from './schema';
@@ -15,6 +15,7 @@ import Part9SportsDanceMusicStep from './steps/Part9SportsDanceMusicStep';
 import Part10IndigentStep from './steps/Part10IndigentStep';
 import Part11CertificationStep from './steps/Part11CertificationStep';
 import { CheckCircle2, Download } from 'lucide-react';
+import * as htmlToImage from 'html-to-image';
 
 const STEPS = [
   { id: 'part1', title: 'I. Personal Info' },
@@ -34,6 +35,7 @@ export default function ApplicationWizard() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successRefNumber, setSuccessRefNumber] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const methods = useForm<ApplicationFormValues>({
     resolver: zodResolver(applicationSchema),
@@ -50,15 +52,41 @@ export default function ApplicationWizard() {
     mode: "onTouched",
   });
 
-  const { handleSubmit } = methods;
+  const { handleSubmit, trigger } = methods;
+
+  const STEP_FIELDS: (keyof ApplicationFormValues)[][] = [
+    // Step 1
+    ['studentId', 'lastName', 'givenName', 'middleName', 'noMiddleName', 'extension', 'college', 'course', 'major', 'yearLevel', 'sex', 'age', 'birthdate', 'civilStatus', 'placeOfBirth', 'religion', 'religionOthers', 'mobileNumber', 'emailAddress', 'currentHouseBlock', 'currentStreet', 'currentBarangay', 'currentMunicipality', 'currentProvince', 'currentRegion', 'currentZipCode', 'sameAsCurrentAddress', 'permanentHouseBlock', 'permanentStreet', 'permanentBarangay', 'permanentMunicipality', 'permanentProvince', 'permanentRegion', 'permanentZipCode', 'studentClassification'],
+    // Step 2
+    ['headFullName', 'headRelationship', 'headRelationshipOthers', 'totalMembers', 'monthlyIncome', 'mainSourceOfIncome', 'mainSourceOfIncomeOthers', 'govAssistance', 'govAssistanceOthers'],
+    // Step 3
+    ['fatherFamilyName', 'fatherGivenName', 'fatherMiddleName', 'fatherNoMiddleName', 'fatherExtension', 'fatherLivingStatus', 'fatherEducation', 'fatherEmploymentStatus', 'fatherOccupationCategory', 'fatherOccupationOthers', 'fatherSpecificOccupation', 'fatherEmployer', 'fatherMonthlyIncome', 'motherFamilyName', 'motherGivenName', 'motherMiddleName', 'motherNoMiddleName', 'motherLivingStatus', 'motherEducation', 'motherEmploymentStatus', 'motherOccupationCategory', 'motherOccupationOthers', 'motherEmployer', 'motherMonthlyIncome', 'guardianFullName', 'guardianRelationship', 'guardianRelationshipOthers', 'guardianContact'],
+    // Step 4
+    ['householdMembers'],
+    // Step 5
+    ['previousGwa', 'academicHonors', 'uploadGrades', 'uploadRecommendation', 'uploadGwaProof'],
+    // Step 6
+    ['isPwd', 'pwdType', 'pwdTypeOthers', 'pwdIdNumber', 'pwdLgu', 'pwdDateIssued', 'pwdExpiration', 'uploadPwdId', 'uploadMedicalCert'],
+    // Step 7
+    ['isSoloParent', 'soloParentIdNumber', 'soloParentLgu', 'soloParentDateIssued', 'soloParentExpiration', 'uploadSoloParentId'],
+    // Step 8
+    ['isIp', 'ipTribe', 'ipTribeOthers', 'ipNcipNumber', 'ipDomain', 'uploadNcipCct', 'uploadNcipConfirmation', 'uploadTribalChieftainCert'],
+    // Step 9
+    ['isAthleteArtist', 'athleteType', 'athleteEvent', 'athleteYears', 'athleteHighestCompetition', 'athleteAwards', 'uploadAthleteCert', 'uploadAthleteAwards'],
+    // Step 10
+    ['isIndigent', 'indigentVerificationType', 'uploadIndigentCert', 'uploadSocialCaseStudy', 'uploadCertOfIndigency'],
+    // Step 11
+    ['certifyTrue', 'certifyAuthentic', 'dataPrivacyConsent', 'uploadDigitalSignature']
+  ];
 
   const nextStep = async () => {
-    // We could validate the specific fields of the current step here if we wanted
-    // For now, we'll let them navigate freely or trigger full validation at the end.
-    // const isStepValid = await trigger();
-    // if (isStepValid) {
-    if (currentStep < STEPS.length - 1) {
-      setCurrentStep((prev) => prev + 1);
+    const fieldsToValidate = STEP_FIELDS[currentStep];
+    const isStepValid = await trigger(fieldsToValidate);
+    
+    if (isStepValid) {
+      if (currentStep < STEPS.length - 1) {
+        setCurrentStep((prev) => prev + 1);
+      }
     }
   };
 
@@ -70,22 +98,52 @@ export default function ApplicationWizard() {
 
   const onFormError = (errors: any) => {
     console.log("Validation Errors preventing submission:", errors);
-    alert("Notice: There are validation errors on previous steps (check console). Bypassing validation to show the Success Modal mockup!");
-    onSubmit({} as any); // Force submit for mockup purposes
+    // Let react-hook-form handle showing field errors naturally.
   };
 
   const onSubmit = async (data: ApplicationFormValues) => {
     setIsSubmitting(true);
     console.log('Final Form Data Submitted:', data);
     
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Generate mock reference number
-    const year = new Date().getFullYear();
-    const randomNum = Math.floor(1000 + Math.random() * 9000);
-    setSuccessRefNumber(`APP-${year}-${randomNum}`);
-    setIsSubmitting(false);
+    try {
+      const formData = new FormData();
+      
+      // Convert nested objects/arrays to strings, and append Files directly
+      Object.entries(data).forEach(([key, value]) => {
+        if (value instanceof FileList) {
+          if (value.length > 0) {
+            formData.append(key, value[0]); // Take the first file
+          }
+        } else if (value instanceof File) {
+          formData.append(key, value);
+        } else if (value !== undefined && value !== null) {
+          if (typeof value === 'object') {
+            formData.append(key, JSON.stringify(value));
+          } else {
+            formData.append(key, value.toString());
+          }
+        }
+      });
+
+      const response = await fetch('http://localhost:5000/api/applications', {
+        method: 'POST',
+        // Do not set Content-Type header when sending FormData, the browser handles the boundary
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to submit application');
+      }
+      
+      setSuccessRefNumber(result.referenceNumber);
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert('There was an error submitting your application. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -163,7 +221,7 @@ export default function ApplicationWizard() {
       {/* Success Modal */}
       {successRefNumber && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border p-8 text-center animate-in zoom-in-95 duration-300">
+          <div ref={modalRef} className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border p-8 text-center animate-in zoom-in-95 duration-300">
             <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-500 rounded-full flex items-center justify-center mb-6">
               <CheckCircle2 className="w-8 h-8" />
             </div>
@@ -177,10 +235,29 @@ export default function ApplicationWizard() {
               <p className="text-2xl font-bold text-primary tracking-widest">{successRefNumber}</p>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3" data-html2canvas-ignore="true">
               <button 
                 type="button"
-                onClick={() => alert("Saving image to gallery... (Mockup)")}
+                onClick={async () => {
+                  if (!modalRef.current) return;
+                  try {
+                    const dataUrl = await htmlToImage.toPng(modalRef.current, {
+                      backgroundColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#020817' : '#ffffff',
+                      pixelRatio: 2,
+                      filter: (node) => {
+                        // Exclude the button container itself
+                        return (node as HTMLElement).dataset?.html2canvasIgnore !== 'true';
+                      }
+                    });
+                    const link = document.createElement('a');
+                    link.download = `${successRefNumber}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                  } catch (err) {
+                    console.error("Failed to generate image:", err);
+                    alert("Failed to save image. Please take a screenshot manually.");
+                  }
+                }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold rounded-xl transition-all"
               >
                 <Download className="w-4 h-4" /> Save to Gallery
