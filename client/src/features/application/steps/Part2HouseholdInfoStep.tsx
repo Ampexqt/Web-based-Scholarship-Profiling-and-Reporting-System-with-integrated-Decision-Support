@@ -18,7 +18,7 @@ export default function Part2HouseholdInfoStep() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Household Head Full Name <span className="text-destructive">*</span></label>
-          <input {...register("headFullName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <input placeholder="e.g. Juan Dela Cruz" {...register("headFullName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Relationship to Applicant <span className="text-destructive">*</span></label>
