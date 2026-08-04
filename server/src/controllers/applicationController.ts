@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import fs from 'fs';
+import path from 'path';
 
 const prisma = new PrismaClient();
 
@@ -17,18 +19,44 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
       }
     }
 
-    const files = req.files as Express.Multer.File[] | undefined;
-    const filePaths: Record<string, string> = {};
-    if (files) {
-      files.forEach(f => {
-        filePaths[f.fieldname] = f.path; // Save the path to the uploaded file
-      });
-    }
-    
     // Generate a reference number
     const year = new Date().getFullYear();
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const referenceNumber = `APP-${year}-${randomNum}`;
+    
+    // Create folder for applicant
+    const applicantUploadDir = path.join(process.cwd(), 'uploads', referenceNumber);
+    if (!fs.existsSync(applicantUploadDir)) {
+      fs.mkdirSync(applicantUploadDir, { recursive: true });
+    }
+
+    const files = req.files as Express.Multer.File[] | undefined;
+    const filePaths: Record<string, string> = {};
+    if (files) {
+      files.forEach(f => {
+        // Move file from temporary uploads/ to uploads/APP-.../
+        const newFileName = `${referenceNumber}_${f.fieldname}${path.extname(f.originalname)}`;
+        const newFilePath = path.join(applicantUploadDir, newFileName);
+        fs.renameSync(f.path, newFilePath);
+        
+        filePaths[f.fieldname] = path.relative(process.cwd(), newFilePath);
+      });
+    }
+    
+    if (data.uploadDigitalSignature && data.uploadDigitalSignature.startsWith('data:image')) {
+      // Extract base64 and save as image file
+      const matches = data.uploadDigitalSignature.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      if (matches && matches.length === 3) {
+        const ext = matches[1].split('/')[1] === 'jpeg' ? '.jpg' : '.png';
+        const signatureFileName = `${referenceNumber}_digitalSignature${ext}`;
+        const signatureFilePath = path.join(applicantUploadDir, signatureFileName);
+        
+        fs.writeFileSync(signatureFilePath, Buffer.from(matches[2], 'base64'));
+        
+        // Update data to point to the file path instead of base64
+        data.uploadDigitalSignature = path.relative(process.cwd(), signatureFilePath);
+      }
+    }
     
     const application = await prisma.application.create({
       data: {
@@ -182,13 +210,13 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     });
 
     // Update digital signature (since we didn't define a specific JSON group for certification, let's append it to personalInfo or specialCircumstances. Let's add it to personalInfo)
-    if (filePaths['uploadDigitalSignature']) {
+    if (data.uploadDigitalSignature) {
       await prisma.application.update({
         where: { id: application.id },
         data: {
           personalInfo: {
             ...(application.personalInfo as any),
-            uploadDigitalSignature: filePaths['uploadDigitalSignature']
+            uploadDigitalSignature: data.uploadDigitalSignature
           }
         }
       });
@@ -204,7 +232,9 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     console.error('Error submitting application:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to submit application. Please try again.'
+      message: 'Failed to submit application. Please try again.',
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined
     });
   }
 };
