@@ -34,7 +34,7 @@ export default function Part4HouseholdCompositionStep() {
             <h4 className="text-sm font-bold text-primary mb-4 uppercase tracking-wider">Member {index + 1}</h4>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div className="space-y-2"><label className="text-xs font-medium">Full Name</label><input {...register(`householdMembers.${index}.name`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" placeholder="Name" /></div>
+              <div className="space-y-2"><label className="text-xs font-medium">Full Name</label><input {...register(`householdMembers.${index}.name`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" placeholder="e.g. Juan Dela Cruz" /></div>
               
               <div className="space-y-2">
                 <label className="text-xs font-medium">Relationship</label>
@@ -53,7 +53,7 @@ export default function Part4HouseholdCompositionStep() {
               </div>
 
               <div className="space-y-2"><label className="text-xs font-medium">Sex</label><select {...register(`householdMembers.${index}.sex`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"><option value="Male">Male</option><option value="Female">Female</option></select></div>
-              <div className="space-y-2"><label className="text-xs font-medium">Age</label><input type="number" {...register(`householdMembers.${index}.age`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+              <div className="space-y-2"><label className="text-xs font-medium">Age</label><input placeholder="e.g. 18" type="number" {...register(`householdMembers.${index}.age`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
               
               <div className="space-y-2">
                 <label className="text-xs font-medium">Civil Status</label>
@@ -89,7 +89,7 @@ export default function Part4HouseholdCompositionStep() {
                 )}
               </div>
 
-              <div className="space-y-2"><label className="text-xs font-medium">Occupation</label><input {...register(`householdMembers.${index}.occupation`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+              <div className="space-y-2"><label className="text-xs font-medium">Occupation</label><input placeholder="e.g. Student, Driver" {...register(`householdMembers.${index}.occupation`)} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
               
               <div className="space-y-2">
                 <label className="text-xs font-medium">Employment Status</label>
