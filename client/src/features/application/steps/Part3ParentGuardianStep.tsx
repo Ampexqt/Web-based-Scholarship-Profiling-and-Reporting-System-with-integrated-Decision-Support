@@ -24,8 +24,8 @@ export default function Part3ParentGuardianStep() {
         <h3 className="text-lg font-serif font-bold border-b border-border pb-2 text-primary">FATHER'S INFORMATION</h3>
         <p className="text-xs text-muted-foreground">Tap or click an option to select.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="space-y-2"><label className="text-xs font-medium">Family Name</label><input {...register("fatherFamilyName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-          <div className="space-y-2"><label className="text-xs font-medium">Given Name</label><input {...register("fatherGivenName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Family Name</label><input placeholder="e.g. Dela Cruz" {...register("fatherFamilyName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Given Name</label><input placeholder="e.g. Juan" {...register("fatherGivenName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium">Middle Name</label>
@@ -34,7 +34,7 @@ export default function Part3ParentGuardianStep() {
                 <span className="text-muted-foreground">None</span>
               </label>
             </div>
-            <input {...register("fatherMiddleName")} disabled={watch("fatherNoMiddleName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-50 disabled:bg-muted" />
+            <input placeholder="e.g. Reyes" {...register("fatherMiddleName")} disabled={watch("fatherNoMiddleName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-50 disabled:bg-muted" />
           </div>
           <div className="space-y-2">
             <label className="text-xs font-medium">Extension</label>
@@ -62,8 +62,8 @@ export default function Part3ParentGuardianStep() {
             )}
           </div>
           
-          <div className="space-y-2"><label className="text-xs font-medium">Specific Occupation (Optional)</label><input {...register("fatherSpecificOccupation")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-          <div className="space-y-2"><label className="text-xs font-medium">Employer / Business</label><input {...register("fatherEmployer")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Specific Occupation (Optional)</label><input placeholder="e.g. Carpenter, Vendor" {...register("fatherSpecificOccupation")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Employer / Business</label><input placeholder="e.g. ABC Construction" {...register("fatherEmployer")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           <div className="space-y-2 md:col-span-3"><label className="text-xs font-medium">Monthly Income</label><select {...register("fatherMonthlyIncome")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"><option value="">Select Income Bracket</option>{incomes.map(e => <option key={e} value={e}>{e}</option>)}</select></div>
         </div>
       </div>
@@ -72,8 +72,8 @@ export default function Part3ParentGuardianStep() {
         <h3 className="text-lg font-serif font-bold border-b border-border pb-2 text-primary">MOTHER'S MAIDEN NAME</h3>
         <p className="text-xs text-muted-foreground">Tap or click an option to select.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2"><label className="text-xs font-medium">Family Name</label><input {...register("motherFamilyName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-          <div className="space-y-2"><label className="text-xs font-medium">Given Name</label><input {...register("motherGivenName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Family Name</label><input placeholder="e.g. Dela Cruz" {...register("motherFamilyName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Given Name</label><input placeholder="e.g. Maria" {...register("motherGivenName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-medium">Middle Name</label>
@@ -82,7 +82,7 @@ export default function Part3ParentGuardianStep() {
                 <span className="text-muted-foreground">None</span>
               </label>
             </div>
-            <input {...register("motherMiddleName")} disabled={watch("motherNoMiddleName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-50 disabled:bg-muted" />
+            <input placeholder="e.g. Santos" {...register("motherMiddleName")} disabled={watch("motherNoMiddleName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm disabled:opacity-50 disabled:bg-muted" />
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -98,7 +98,7 @@ export default function Part3ParentGuardianStep() {
             )}
           </div>
           
-          <div className="space-y-2"><label className="text-xs font-medium">Employer / Business (Optional)</label><input {...register("motherEmployer")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Employer / Business (Optional)</label><input placeholder="e.g. Department of Education" {...register("motherEmployer")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           <div className="space-y-2"><label className="text-xs font-medium">Monthly Income</label><select {...register("motherMonthlyIncome")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"><option value="">Select Income Bracket</option>{incomes.map(e => <option key={e} value={e}>{e}</option>)}</select></div>
         </div>
       </div>
@@ -106,7 +106,7 @@ export default function Part3ParentGuardianStep() {
       <div className="space-y-6 pt-6 border-t border-border">
         <h3 className="text-lg font-serif font-bold border-b border-border pb-2 text-primary">GUARDIAN (If Applicable)</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2"><label className="text-xs font-medium">Full Name</label><input {...register("guardianFullName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+          <div className="space-y-2"><label className="text-xs font-medium">Full Name</label><input placeholder="e.g. Juan Dela Cruz" {...register("guardianFullName")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           <div className="space-y-2">
             <label className="text-xs font-medium">Relationship to Applicant</label>
             <select {...register("guardianRelationship")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm">
