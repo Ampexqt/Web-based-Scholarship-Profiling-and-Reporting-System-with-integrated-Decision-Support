@@ -37,9 +37,9 @@ export default function Part9SportsDanceMusicStep() {
       {isAthleteArtist === "Yes" && (
         <div className="space-y-8 animate-fade-in-up pt-4 border-t border-border">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2"><label className="text-xs font-medium">What Sports, Dance, and Musical?</label><input {...register("athleteType")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-            <div className="space-y-2"><label className="text-xs font-medium">Event/Position</label><input {...register("athleteEvent")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-            <div className="space-y-2"><label className="text-xs font-medium">Number of Years Participating</label><input type="number" {...register("athleteYears")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">What Sports, Dance, and Musical?</label><input placeholder="e.g. Basketball, Chess, Choir" {...register("athleteType")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Event/Position</label><input placeholder="e.g. Point Guard, Singer" {...register("athleteEvent")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Number of Years Participating</label><input placeholder="e.g. 3" type="number" {...register("athleteYears")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
             <div className="space-y-2">
               <label className="text-xs font-medium">Highest Competition Participated</label>
               <select {...register("athleteHighestCompetition")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm">
@@ -51,7 +51,7 @@ export default function Part9SportsDanceMusicStep() {
                 <option value="International">International</option>
               </select>
             </div>
-            <div className="space-y-2 md:col-span-2"><label className="text-xs font-medium">Awards and Achievements</label><input {...register("athleteAwards")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2 md:col-span-2"><label className="text-xs font-medium">Awards and Achievements</label><input placeholder="e.g. MVP, Gold Medalist" {...register("athleteAwards")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           </div>
 
           <div className="space-y-4 pt-4">
