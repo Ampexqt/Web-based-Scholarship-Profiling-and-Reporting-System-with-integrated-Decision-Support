@@ -49,8 +49,8 @@ export default function Part8IPStep() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2"><label className="text-xs font-medium">NCIP Certificate Number</label><input {...register("ipNcipNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-            <div className="space-y-2"><label className="text-xs font-medium">Ancestral Domain/Community</label><input {...register("ipDomain")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">NCIP Certificate Number</label><input placeholder="e.g. 12-3456" {...register("ipNcipNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Ancestral Domain/Community</label><input placeholder="e.g. Subanen" {...register("ipDomain")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           </div>
 
           <div className="space-y-4 pt-4">
