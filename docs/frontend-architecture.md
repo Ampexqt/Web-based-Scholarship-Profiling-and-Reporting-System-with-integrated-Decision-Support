@@ -17,6 +17,7 @@ The Web-based Scholarship Profiling and Reporting System utilizes a **Client-Sid
 - **Component Library:** shadcn/ui combined with Base UI primitives. This provides a highly customizable, accessible, and premium design system.
 - **Icons:** Lucide React
 - **Animations:** tw-animate-css (Provides subtle micro-interactions to enhance UX)
+- **Image Export:** html-to-image (Used to generate high-quality images from DOM elements like the Success Modal, fully supporting modern CSS like `oklch`)
 
 ## State and Data Management
 
