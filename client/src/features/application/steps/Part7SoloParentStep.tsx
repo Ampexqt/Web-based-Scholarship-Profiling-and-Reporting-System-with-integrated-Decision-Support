@@ -37,8 +37,8 @@ export default function Part7SoloParentStep() {
       {isSoloParent === "Yes" && (
         <div className="space-y-8 animate-fade-in-up pt-4 border-t border-border">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div className="space-y-2"><label className="text-xs font-medium">Solo Parent ID Number</label><input {...register("soloParentIdNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
-            <div className="space-y-2"><label className="text-xs font-medium">Issuing LGU</label><input {...register("soloParentLgu")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Solo Parent ID Number</label><input placeholder="e.g. SP-12345" {...register("soloParentIdNumber")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
+            <div className="space-y-2"><label className="text-xs font-medium">Issuing LGU</label><input placeholder="e.g. Zamboanga City" {...register("soloParentLgu")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
             <div className="space-y-2"><label className="text-xs font-medium">Date Issued</label><input type="date" {...register("soloParentDateIssued")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
             <div className="space-y-2"><label className="text-xs font-medium">Expiration Date</label><input type="date" {...register("soloParentExpiration")} className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm" /></div>
           </div>
