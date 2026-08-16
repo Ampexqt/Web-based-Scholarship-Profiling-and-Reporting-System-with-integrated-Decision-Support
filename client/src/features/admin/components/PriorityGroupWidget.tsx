@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Users, Accessibility, Baby, Mountain, Trophy, HandHeart } from "lucide-react"
+import { Link } from "react-router-dom"
 
 const priorityGroups = [
   {
@@ -48,7 +49,13 @@ export default function PriorityGroupWidget() {
       <CardContent className="p-0 flex-1 flex flex-col">
         <div className="flex flex-col flex-1 divide-y">
           {priorityGroups.map((group) => (
-            <div key={group.id} className="flex items-center justify-between p-4 px-6 hover:bg-muted/50 transition-colors cursor-pointer group">
+            <Link 
+              to={`priority-groups/${group.id}`} 
+              key={group.id} 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-4 px-6 hover:bg-muted/50 transition-colors cursor-pointer group"
+            >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-md bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                   <group.icon className="w-4 h-4" />
@@ -58,7 +65,7 @@ export default function PriorityGroupWidget() {
               <Badge variant="secondary">
                 {group.count}
               </Badge>
-            </div>
+            </Link>
           ))}
         </div>
       </CardContent>
