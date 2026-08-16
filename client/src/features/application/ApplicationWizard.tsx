@@ -125,7 +125,7 @@ export default function ApplicationWizard() {
         }
       });
 
-      const response = await fetch('http://localhost:5000/api/applications', {
+      const response = await fetch(`/api/applications`, {
         method: 'POST',
         // Do not set Content-Type header when sending FormData, the browser handles the boundary
         body: formData
