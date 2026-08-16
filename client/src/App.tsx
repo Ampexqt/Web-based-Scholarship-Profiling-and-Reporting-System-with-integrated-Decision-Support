@@ -13,6 +13,7 @@ import DecisionSupportPage from './features/admin/pages/DecisionSupportPage';
 import ReportsPage from './features/admin/pages/ReportsPage';
 import AuditLogsPage from './features/admin/pages/AuditLogsPage';
 import StaffManagementPage from './features/admin/pages/StaffManagementPage';
+import { PriorityGroupDetailsPage } from "./features/shared/pages/PriorityGroupDetailsPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="decision-support" element={<DecisionSupportPage />} />
           </Route>
           <Route path="/staff/applications/:id" element={<ApplicationReviewPage />} />
+          <Route path="/staff/priority-groups/:id" element={<PriorityGroupDetailsPage />} />
           
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
@@ -40,6 +42,7 @@ function App() {
             {/* Add more nested admin routes here later */}
           </Route>
           <Route path="/admin/applications/:id" element={<ApplicationReviewPage />} />
+          <Route path="/admin/priority-groups/:id" element={<PriorityGroupDetailsPage />} />
         </Routes>
       </Router>
     </TooltipProvider>
