@@ -167,7 +167,7 @@ export default function ApplicationsPage() {
                     <TableCell>{getStatusBadge(app.status)}</TableCell>
                     <TableCell className="text-right pr-6">
                       <Link 
-                        to={`/admin/applications/${app.id}`} 
+                        to={app.id} 
                         className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-muted h-8 w-8 text-muted-foreground hover:text-foreground"
                       >
                         <FileText className="w-4 h-4" />
