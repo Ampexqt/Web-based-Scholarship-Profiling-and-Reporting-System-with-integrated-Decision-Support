@@ -86,12 +86,14 @@ export default function AdminLayout() {
                       <span className="text-sm group-data-[collapsible=icon]:hidden">Audit Logs</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+{/*
                   <SidebarMenuItem>
                     <SidebarMenuButton size="lg" render={<Link to="/admin/staff-management" />} isActive={location.pathname.startsWith('/admin/staff-management')} tooltip="Staff Accounts">
                       <Users />
                       <span className="text-sm group-data-[collapsible=icon]:hidden">Staff Accounts</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
+                  */}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
