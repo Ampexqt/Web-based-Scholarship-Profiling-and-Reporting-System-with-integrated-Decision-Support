@@ -116,7 +116,7 @@ export default function ApplicationReviewPage() {
         
         {/* Back Button - Separated */}
         <div className="mb-4">
-          <Link to="/staff/applications" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 px-3 py-1.5 rounded-md transition-colors -ml-3">
+          <Link to="/admin/applications" className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 px-3 py-1.5 rounded-md transition-colors -ml-3">
             <ArrowLeft className="w-4 h-4" /> Back to Applications
           </Link>
         </div>
