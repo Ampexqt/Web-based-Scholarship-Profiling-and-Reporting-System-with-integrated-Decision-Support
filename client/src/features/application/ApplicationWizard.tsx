@@ -16,6 +16,7 @@ import Part10IndigentStep from './steps/Part10IndigentStep';
 import Part11CertificationStep from './steps/Part11CertificationStep';
 import { CheckCircle2, Download } from 'lucide-react';
 import * as htmlToImage from 'html-to-image';
+import { toast } from 'sonner';
 
 const STEPS = [
   { id: 'part1', title: 'I. Personal Info' },
@@ -81,11 +82,78 @@ export default function ApplicationWizard() {
 
   const nextStep = async () => {
     const fieldsToValidate = STEP_FIELDS[currentStep];
-    const isStepValid = await trigger(fieldsToValidate);
+    let isStepValid = await trigger(fieldsToValidate);
     
+    // Manual check for file uploads due to zodResolver partial trigger limitations
+    const data = methods.getValues();
+    const isFileValid = (val: any) => {
+      if (val && typeof val === 'object' && 'length' in val) return val.length > 0;
+      if (typeof val === 'string' && val.length > 0) return true;
+      return false;
+    };
+
+    const addManualError = (field: keyof ApplicationFormValues, msg: string) => {
+      methods.setError(field, { type: "manual", message: msg });
+      isStepValid = false;
+    };
+
+    if (currentStep === 4) { // Step 5: Academic Info
+      if (!isFileValid(data.uploadGrades)) addManualError('uploadGrades', 'Grades attachment is required');
+      if (!isFileValid(data.uploadRecommendation)) addManualError('uploadRecommendation', 'Recommendation letter is required');
+      if (!isFileValid(data.uploadGwaProof)) addManualError('uploadGwaProof', 'GWA proof is required');
+    } else if (currentStep === 5 && data.isPwd === 'Yes') { // Step 6: PWD
+      if (!isFileValid(data.uploadPwdId)) addManualError('uploadPwdId', 'PWD ID is required');
+    } else if (currentStep === 6 && data.isSoloParent === 'Yes') { // Step 7: Solo Parent
+      if (!isFileValid(data.uploadSoloParentId)) addManualError('uploadSoloParentId', 'Solo Parent ID is required');
+    } else if (currentStep === 7 && data.isIp === 'Yes') { // Step 8: IP
+      if (!isFileValid(data.uploadNcipCct)) addManualError('uploadNcipCct', 'NCIP CCT is required');
+      if (!isFileValid(data.uploadNcipConfirmation)) addManualError('uploadNcipConfirmation', 'NCIP Confirmation is required');
+    } else if (currentStep === 8 && data.isAthleteArtist === 'Yes') { // Step 9: Athlete
+      if (!isFileValid(data.uploadAthleteCert)) addManualError('uploadAthleteCert', 'Athlete/Artist Certificate is required');
+      if (!isFileValid(data.uploadAthleteAwards)) addManualError('uploadAthleteAwards', 'Awards proof is required');
+    } else if (currentStep === 9 && data.isIndigent === 'Yes') { // Step 10: Indigent
+      const hasIndigent = isFileValid(data.uploadIndigentCert);
+      const hasCaseStudy = isFileValid(data.uploadSocialCaseStudy);
+      const hasCert = isFileValid(data.uploadCertOfIndigency);
+      if (!hasIndigent && !hasCaseStudy && !hasCert) {
+        addManualError('uploadIndigentCert', 'Please provide at least one indigent document');
+      }
+    } else if (currentStep === 10) { // Step 11: Certification
+      if (!isFileValid(data.uploadDigitalSignature)) addManualError('uploadDigitalSignature', 'Digital Signature is required');
+    }
+
     if (isStepValid) {
       if (currentStep < STEPS.length - 1) {
         setCurrentStep((prev) => prev + 1);
+      }
+    } else {
+      // Extract specific error messages or nicely formatted field names for the current step
+      const stepErrors = fieldsToValidate
+        .filter(field => methods.formState.errors[field as keyof ApplicationFormValues])
+        .map(field => {
+          const errorMsg = methods.formState.errors[field as keyof ApplicationFormValues]?.message as string;
+          // If Zod throws a generic type error or it's missing, format the field name
+          if (!errorMsg || errorMsg.includes('Invalid input') || errorMsg === 'Required') {
+            // Convert camelCase to Title Case (e.g. mainSourceOfIncome -> Main Source Of Income)
+            return field.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+          }
+          // Otherwise, use our custom message but strip " is required" to keep the list clean
+          return errorMsg.replace(/ is required/i, '');
+        });
+
+      if (stepErrors.length === 1) {
+        toast.error('Missing Required Field', {
+          description: `Please provide: ${stepErrors[0]}`,
+        });
+      } else if (stepErrors.length > 1) {
+        const missingList = stepErrors.join(', ');
+        toast.error(`Missing ${stepErrors.length} Required Fields`, {
+          description: `Please provide: ${missingList}`,
+        });
+      } else {
+        toast.error('Missing Required Fields', {
+          description: 'Please fill out all the required fields before proceeding to the next step.',
+        });
       }
     }
   };
@@ -98,7 +166,9 @@ export default function ApplicationWizard() {
 
   const onFormError = (errors: any) => {
     console.log("Validation Errors preventing submission:", errors);
-    // Let react-hook-form handle showing field errors naturally.
+    toast.error('Missing Required Fields', {
+      description: 'Please review the form and fill out all required fields before submitting.',
+    });
   };
 
   const onSubmit = async (data: ApplicationFormValues) => {
@@ -221,58 +291,69 @@ export default function ApplicationWizard() {
       {/* Success Modal */}
       {successRefNumber && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
-          <div ref={modalRef} className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border p-8 text-center animate-in zoom-in-95 duration-300">
-            <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-500 rounded-full flex items-center justify-center mb-6">
-              <CheckCircle2 className="w-8 h-8" />
-            </div>
-            <h2 className="text-2xl font-serif font-bold text-foreground mb-2">Application Submitted!</h2>
-            <p className="text-sm text-muted-foreground mb-6">
-              Your scholarship application has been successfully received. Please save your reference number for tracking.
-            </p>
+          <div className="bg-card w-full max-w-md rounded-3xl shadow-2xl border border-border overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col">
             
-            <div className="bg-muted p-4 rounded-xl mb-8 border border-border/50">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Reference Number</p>
-              <p className="text-2xl font-bold text-primary tracking-widest">{successRefNumber}</p>
+            {/* The exact area that gets captured as an image */}
+            <div ref={modalRef} className="p-8 pb-6 text-center bg-card">
+              <div className="mx-auto w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mb-6">
+                <CheckCircle2 className="w-8 h-8" />
+              </div>
+              <h2 className="text-2xl font-serif font-bold text-foreground mb-2">Application Submitted!</h2>
+              <p className="text-sm text-muted-foreground mb-6">
+                Your scholarship application has been successfully received. Please save your reference number for tracking.
+              </p>
+              
+              <div className="bg-muted p-4 rounded-xl border border-border/50">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Reference Number</p>
+                <p className="text-2xl font-bold text-primary tracking-widest">{successRefNumber}</p>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-3" data-html2canvas-ignore="true">
-              <button 
-                type="button"
-                onClick={async () => {
-                  if (!modalRef.current) return;
-                  try {
-                    const dataUrl = await htmlToImage.toPng(modalRef.current, {
-                      backgroundColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#020817' : '#ffffff',
-                      pixelRatio: 2,
-                      filter: (node) => {
-                        // Exclude the button container itself
-                        return (node as HTMLElement).dataset?.html2canvasIgnore !== 'true';
-                      }
-                    });
-                    const link = document.createElement('a');
-                    link.download = `${successRefNumber}.png`;
-                    link.href = dataUrl;
-                    link.click();
-                  } catch (err) {
-                    console.error("Failed to generate image:", err);
-                    alert("Failed to save image. Please take a screenshot manually.");
-                  }
-                }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold rounded-xl transition-all"
-              >
-                <Download className="w-4 h-4" /> Save to Gallery
-              </button>
-              <button 
-                type="button"
-                onClick={() => {
-                  setSuccessRefNumber(null);
-                  setCurrentStep(0);
-                  methods.reset();
-                }}
-                className="w-full px-4 py-3 mt-2 text-muted-foreground hover:text-foreground text-sm font-semibold transition-all"
-              >
-                Close
-              </button>
+            {/* Buttons area (Not captured) */}
+            <div className="px-8 pb-8 pt-2">
+              <div className="flex flex-col gap-3">
+                <button 
+                  type="button"
+                  onClick={async () => {
+                    if (!modalRef.current) return;
+                    try {
+                      // Add a small temporary style to make the saved image look like a complete card
+                      const originalBorderRadius = modalRef.current.style.borderRadius;
+                      modalRef.current.style.borderRadius = '24px';
+                      
+                      const dataUrl = await htmlToImage.toPng(modalRef.current, {
+                        backgroundColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#020817' : '#ffffff',
+                        pixelRatio: 3, // Higher quality
+                      });
+                      
+                      // Restore original style
+                      modalRef.current.style.borderRadius = originalBorderRadius;
+                      
+                      const link = document.createElement('a');
+                      link.download = `Application_${successRefNumber}.png`;
+                      link.href = dataUrl;
+                      link.click();
+                    } catch (err) {
+                      console.error("Failed to generate image:", err);
+                      alert("Failed to save image. Please take a screenshot manually.");
+                    }
+                  }}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground hover:bg-primary/90 text-sm font-bold rounded-xl transition-all"
+                >
+                  <Download className="w-4 h-4" /> Save to Gallery
+                </button>
+                <button 
+                  type="button"
+                  onClick={() => {
+                    setSuccessRefNumber(null);
+                    setCurrentStep(0);
+                    methods.reset();
+                  }}
+                  className="w-full px-4 py-3 mt-1 text-muted-foreground hover:text-foreground text-sm font-semibold transition-all"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
