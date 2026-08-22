@@ -178,6 +178,62 @@ export const applicationSchema = z.object({
   certifyAuthentic: z.boolean().refine(val => val === true, "You must certify the documents are authentic."),
   dataPrivacyConsent: z.boolean().refine(val => val === true, "You must accept the Data Privacy Consent."),
   uploadDigitalSignature: z.any().optional(), // File upload
+}).superRefine((data, ctx) => {
+  const isFileValid = (val: any) => {
+    // For FileList
+    if (val && typeof val === 'object' && 'length' in val) return val.length > 0;
+    // For base64 strings (like digital signature)
+    if (typeof val === 'string' && val.length > 0) return true;
+    return false;
+  };
+
+  // PART V. ACADEMIC INFORMATION (Always Required)
+  if (!isFileValid(data.uploadGrades)) {
+    ctx.addIssue({ path: ["uploadGrades"], message: "Grades attachment is required", code: z.ZodIssueCode.custom });
+  }
+  if (!isFileValid(data.uploadRecommendation)) {
+    ctx.addIssue({ path: ["uploadRecommendation"], message: "Recommendation letter is required", code: z.ZodIssueCode.custom });
+  }
+  if (!isFileValid(data.uploadGwaProof)) {
+    ctx.addIssue({ path: ["uploadGwaProof"], message: "GWA proof is required", code: z.ZodIssueCode.custom });
+  }
+
+  // PART VI. PWD
+  if (data.isPwd === "Yes") {
+    if (!isFileValid(data.uploadPwdId)) ctx.addIssue({ path: ["uploadPwdId"], message: "PWD ID is required", code: z.ZodIssueCode.custom });
+  }
+
+  // PART VII. SOLO PARENT
+  if (data.isSoloParent === "Yes") {
+    if (!isFileValid(data.uploadSoloParentId)) ctx.addIssue({ path: ["uploadSoloParentId"], message: "Solo Parent ID is required", code: z.ZodIssueCode.custom });
+  }
+
+  // PART VIII. IP
+  if (data.isIp === "Yes") {
+    if (!isFileValid(data.uploadNcipCct)) ctx.addIssue({ path: ["uploadNcipCct"], message: "NCIP CCT is required", code: z.ZodIssueCode.custom });
+    if (!isFileValid(data.uploadNcipConfirmation)) ctx.addIssue({ path: ["uploadNcipConfirmation"], message: "NCIP Confirmation is required", code: z.ZodIssueCode.custom });
+  }
+
+  // PART IX. ATHLETE/ARTIST
+  if (data.isAthleteArtist === "Yes") {
+    if (!isFileValid(data.uploadAthleteCert)) ctx.addIssue({ path: ["uploadAthleteCert"], message: "Athlete/Artist Certificate is required", code: z.ZodIssueCode.custom });
+    if (!isFileValid(data.uploadAthleteAwards)) ctx.addIssue({ path: ["uploadAthleteAwards"], message: "Awards proof is required", code: z.ZodIssueCode.custom });
+  }
+
+  // PART X. INDIGENT
+  if (data.isIndigent === "Yes") {
+    const hasIndigent = isFileValid(data.uploadIndigentCert);
+    const hasCaseStudy = isFileValid(data.uploadSocialCaseStudy);
+    const hasCert = isFileValid(data.uploadCertOfIndigency);
+    if (!hasIndigent && !hasCaseStudy && !hasCert) {
+      ctx.addIssue({ path: ["uploadIndigentCert"], message: "Please provide at least one indigent document", code: z.ZodIssueCode.custom });
+    }
+  }
+
+  // PART XI. DIGITAL SIGNATURE
+  if (!isFileValid(data.uploadDigitalSignature)) {
+    ctx.addIssue({ path: ["uploadDigitalSignature"], message: "Digital Signature is required", code: z.ZodIssueCode.custom });
+  }
 });
 
 export type ApplicationFormValues = z.infer<typeof applicationSchema>;
