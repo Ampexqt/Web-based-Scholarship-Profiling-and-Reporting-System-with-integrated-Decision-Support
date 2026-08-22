@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { apiClient } from '@/lib/axios';
+import { getAcronym } from '@/lib/utils';
+import { academicStructure } from '@/features/application/data/academicStructure';
 import {
   Table,
   TableBody,
@@ -23,24 +26,44 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 
-// Mock Data
-const MOCK_APPLICATIONS = [
-  { id: "APP-2026-0842", name: "Dela Cruz, Juan M.", college: "College of Information and Computing Sciences", course: "BS Information Technology", date: "Jul 28, 2026, 10:30 AM", status: "Pending Review" },
-  { id: "APP-2026-0843", name: "Reyes, Maria C.", college: "College of Engineering and Technology", course: "BS Civil Engineering", date: "Jul 28, 2026, 09:15 AM", status: "Flagged" },
-  { id: "APP-2026-0840", name: "Santos, Mark J.", college: "School of Business Administration", course: "BS Business Administration", date: "Jul 27, 2026, 02:45 PM", status: "Pending Review" },
-  { id: "APP-2026-0839", name: "Garcia, Ana L.", college: "School of Business Administration", course: "BS Accountancy", date: "Jul 27, 2026, 11:20 AM", status: "Flagged" },
-  { id: "APP-2026-0835", name: "Mendoza, Paul R.", college: "College of Information and Computing Sciences", course: "BS Information Technology", date: "Jul 25, 2026, 08:50 AM", status: "Pending Review" },
-  { id: "APP-2026-0831", name: "Bautista, Luis T.", college: "College of Engineering and Technology", course: "BS Mechanical Engineering", date: "Jul 24, 2026, 04:15 PM", status: "Pending Review" },
-  { id: "APP-2026-0829", name: "Flores, Angela D.", college: "School of Business Administration", course: "BS Accountancy", date: "Jul 24, 2026, 01:05 PM", status: "Pending Review" },
-  { id: "APP-2026-0822", name: "Villanueva, Jose S.", college: "College of Engineering and Technology", course: "BS Civil Engineering", date: "Jul 23, 2026, 09:30 AM", status: "Flagged" },
-];
+interface Application {
+  id: string;
+  name: string;
+  college: string;
+  course: string;
+  date: string;
+  status: string;
+}
+
+// Initial empty state
+const MOCK_APPLICATIONS: Application[] = [];
 
 export default function ApplicationsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [filterCollege, setFilterCollege] = useState("All");
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const filteredApplications = MOCK_APPLICATIONS.filter(app => {
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        setIsLoading(true);
+        const res: any = await apiClient.get('/applications');
+        if (res.success) {
+          setApplications(res.applications);
+        }
+      } catch (error) {
+        console.error("Failed to fetch applications:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchApplications();
+  }, []);
+
+  const filteredApplications = applications.filter(app => {
     const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.id.toLowerCase().includes(searchTerm.toLowerCase());
       
@@ -111,24 +134,15 @@ export default function ApplicationsPage() {
                   >
                     All Colleges
                   </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={filterCollege === "College of Information and Computing Sciences"}
-                    onCheckedChange={() => setFilterCollege("College of Information and Computing Sciences")}
-                  >
-                    College of Information and Computing Sciences
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={filterCollege === "College of Engineering and Technology"}
-                    onCheckedChange={() => setFilterCollege("College of Engineering and Technology")}
-                  >
-                    College of Engineering and Technology
-                  </DropdownMenuCheckboxItem>
-                  <DropdownMenuCheckboxItem
-                    checked={filterCollege === "School of Business Administration"}
-                    onCheckedChange={() => setFilterCollege("School of Business Administration")}
-                  >
-                    School of Business Administration
-                  </DropdownMenuCheckboxItem>
+                  {academicStructure.map((college) => (
+                    <DropdownMenuCheckboxItem
+                      key={college.name}
+                      checked={filterCollege === college.name}
+                      onCheckedChange={() => setFilterCollege(college.name)}
+                    >
+                      {college.name}
+                    </DropdownMenuCheckboxItem>
+                  ))}
                 </DropdownMenuGroup>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -146,7 +160,7 @@ export default function ApplicationsPage() {
                 <TableHead className="font-semibold text-muted-foreground">Course</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Date Submitted</TableHead>
                 <TableHead className="font-semibold text-muted-foreground">Status</TableHead>
-                <TableHead className="text-right font-semibold text-muted-foreground w-[80px]">Actions</TableHead>
+                <TableHead className="text-right font-semibold text-muted-foreground w-[100px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -161,17 +175,23 @@ export default function ApplicationsPage() {
                   <TableRow key={app.id} className="group hover:bg-muted/20 transition-colors border-b border-border">
                     <TableCell className="font-mono text-sm font-medium text-foreground">{app.id}</TableCell>
                     <TableCell className="font-medium text-foreground">{app.name}</TableCell>
-                    <TableCell className="text-muted-foreground">{app.college}</TableCell>
-                    <TableCell className="text-muted-foreground">{app.course}</TableCell>
-                    <TableCell className="text-muted-foreground">{app.date}</TableCell>
+                    <TableCell className="text-muted-foreground" title={app.college}>
+                      {getAcronym(app.college)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground" title={app.course}>
+                      {getAcronym(app.course)}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {new Date(app.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    </TableCell>
                     <TableCell>{getStatusBadge(app.status)}</TableCell>
                     <TableCell className="text-right pr-6">
                       <Link 
                         to={app.id} 
-                        className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-muted h-8 w-8 text-muted-foreground hover:text-foreground"
+                        className="inline-flex items-center justify-center gap-1.5 rounded-md text-xs font-medium transition-colors hover:bg-primary/10 hover:text-primary bg-muted/50 px-3 py-1.5 text-muted-foreground"
                       >
-                        <FileText className="w-4 h-4" />
-                        <span className="sr-only">Review</span>
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Review</span>
                       </Link>
                     </TableCell>
                   </TableRow>
@@ -181,9 +201,9 @@ export default function ApplicationsPage() {
           </Table>
         </div>
 
-        {/* Pagination/Footer (Mock) */}
+        {/* Pagination/Footer */}
         <div className="p-4 border-t border-border bg-muted/10 text-xs text-muted-foreground flex justify-between items-center">
-          <div>Showing {filteredApplications.length} of {MOCK_APPLICATIONS.length} applications</div>
+          <div>Showing {filteredApplications.length} of {applications.length} applications {isLoading && "(Loading...)"}</div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled className="h-8 text-xs border-border">Previous</Button>
             <Button variant="outline" size="sm" className="h-8 text-xs border-border">Next</Button>
