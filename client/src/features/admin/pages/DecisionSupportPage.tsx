@@ -13,16 +13,9 @@ import { Upload, FileText, CheckCircle, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Mock Data
-const MOCK_UPLOADS = [
-  { id: "UPL-003", name: "TES_Beneficiaries_2026.csv", date: "Jul 27, 2026", records: 450, status: "Processed" },
-  { id: "UPL-002", name: "CHED_Scholars_AY2526.csv", date: "Jul 15, 2026", records: 210, status: "Processed" },
-];
+const MOCK_UPLOADS: any[] = [];
 
-const MOCK_FLAGGED = [
-  { id: "APP-2026-0843", applicantName: "Reyes, Maria C.", matchReason: "Exact Name Match (TES Beneficiary)", listRef: "TES_Beneficiaries_2026", dateFlagged: "Jul 28, 2026" },
-  { id: "APP-2026-0839", applicantName: "Garcia, Ana L.", matchReason: "Duplicate ID Match", listRef: "Internal Database", dateFlagged: "Jul 27, 2026" },
-  { id: "APP-2026-0822", applicantName: "Villanueva, Jose S.", matchReason: "Exact Name Match (CHED Scholar)", listRef: "CHED_Scholars_AY2526", dateFlagged: "Jul 23, 2026" },
-];
+const MOCK_FLAGGED: any[] = [];
 
 export default function DecisionSupportPage() {
   return (
