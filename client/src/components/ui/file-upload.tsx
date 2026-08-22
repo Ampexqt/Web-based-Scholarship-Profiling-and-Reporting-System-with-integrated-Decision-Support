@@ -54,9 +54,9 @@ export function FileUpload({ name, accept = "image/*,application/pdf", helperTex
           Releases dopamine and reduces anxiety by providing immediate, 
           clear visual confirmation that the task succeeded.
         */
-        <div className="relative flex items-center w-full p-4 border border-green-500/20 bg-green-50/50 dark:bg-green-500/10 rounded-2xl shadow-sm transition-all duration-300 animate-in fade-in zoom-in-95">
-          <div className="flex-shrink-0 bg-green-100 dark:bg-green-500/20 p-2.5 rounded-full mr-4">
-            <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+        <div className="relative flex items-center w-full p-4 border border-primary/20 bg-primary/5 dark:bg-primary/10 rounded-2xl shadow-sm transition-all duration-300 animate-in fade-in zoom-in-95">
+          <div className="flex-shrink-0 bg-primary/10 dark:bg-primary/20 p-2.5 rounded-full mr-4">
+            <CheckCircle2 className="w-5 h-5 text-primary" />
           </div>
           
           <div className="flex-1 min-w-0 mr-4">
@@ -64,7 +64,7 @@ export function FileUpload({ name, accept = "image/*,application/pdf", helperTex
               {file.name}
             </p>
             <p className="text-xs text-muted-foreground mt-0.5 flex items-center">
-              <span className="text-green-600 dark:text-green-400 font-medium">Successfully attached</span>
+              <span className="text-primary font-medium">Successfully attached</span>
               {file.size && (
                 <>
                   <span className="mx-2 opacity-30">•</span>
