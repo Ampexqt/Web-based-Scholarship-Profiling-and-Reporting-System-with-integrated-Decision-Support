@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, Search, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { X, Search, CheckCircle2, Clock, AlertCircle, XCircle, Flag } from 'lucide-react';
+import { apiClient } from '@/lib/axios';
 
 interface CheckStatusModalProps {
   isOpen: boolean;
@@ -15,26 +16,29 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
 
   if (!isOpen) return null;
 
-  const handleCheck = (e: React.FormEvent) => {
+  const handleCheck = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reference) return;
     
     setStatus('loading');
     
-    // Simulate API call
-    setTimeout(() => {
-      if (reference.toUpperCase().startsWith('APP-')) {
+    try {
+      const res: any = await apiClient.get(`/applications/${reference.toUpperCase()}`);
+      if (res.success && res.application) {
         setMockStatus({
-          ref: reference.toUpperCase(),
-          status: 'Under Review',
-          dateSubmitted: 'Oct 24, 2026',
-          step: 'Document Verification'
+          ref: res.application.referenceNumber,
+          status: res.application.status,
+          dateSubmitted: new Date(res.application.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+          step: res.application.status === 'Pending' ? 'Document Verification' : res.application.status,
+          remarks: res.application.remarks
         });
         setStatus('found');
       } else {
         setStatus('not-found');
       }
-    }, 800);
+    } catch (error) {
+      setStatus('not-found');
+    }
   };
 
   const handleClose = () => {
@@ -99,24 +103,49 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
                 <p className="font-mono text-xl font-bold text-foreground">{mockStatus.ref}</p>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 p-3 rounded-lg bg-background border border-border">
-                  <div className="mt-0.5 text-amber-500">
-                    <Clock size={20} />
+              <div className="relative pl-2">
+                {/* Timeline vertical line */}
+                <div className="absolute left-[19px] top-6 bottom-10 w-[2px] bg-border/40"></div>
+
+                {/* Current Status Node */}
+                <div className="relative z-10 flex items-start gap-4 pb-8">
+                  <div className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background ring-4 ring-background ${
+                    mockStatus.status === 'Rejected' ? 'text-rose-500' :
+                    mockStatus.status === 'Flagged' ? 'text-amber-500' :
+                    mockStatus.status === 'Approved' ? 'text-foreground' :
+                    'text-blue-500'
+                  }`}>
+                    {mockStatus.status === 'Rejected' ? <XCircle size={20} className="fill-rose-50 text-rose-500" /> :
+                     mockStatus.status === 'Flagged' ? <Flag size={18} className="fill-amber-50 text-amber-500" /> :
+                     mockStatus.status === 'Approved' ? <CheckCircle2 size={20} className="fill-muted text-foreground" /> :
+                     <Clock size={20} className="fill-blue-50 text-blue-500" />}
                   </div>
-                  <div>
-                    <h4 className="font-medium text-foreground">{mockStatus.status}</h4>
-                    <p className="text-sm text-muted-foreground">Currently in: {mockStatus.step}</p>
+                  
+                  <div className="flex-1 pt-1">
+                    <h4 className="font-medium text-foreground text-base tracking-tight">{mockStatus.status}</h4>
+                    <p className="text-sm text-muted-foreground mt-0.5">
+                      {mockStatus.status === 'Pending' ? 'Currently in: Document Verification' : 
+                       mockStatus.status === 'Approved' ? 'Congratulations! Your application has been approved.' :
+                       'Please review the remarks below.'}
+                    </p>
+                    
+                    {mockStatus.remarks && (
+                      <div className="mt-3 p-3.5 bg-muted/30 rounded-lg border border-border/50 shadow-sm">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Remarks / Notes</p>
+                        <p className="text-sm text-foreground/90 leading-relaxed">{mockStatus.remarks}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
-                <div className="flex items-start gap-4 p-3 opacity-60">
-                  <div className="mt-0.5 text-primary">
-                    <CheckCircle2 size={20} />
+                {/* Submitted Node */}
+                <div className="relative z-10 flex items-start gap-4">
+                  <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background ring-4 ring-background text-foreground/70">
+                    <CheckCircle2 size={20} className="text-foreground/70" />
                   </div>
-                  <div>
-                    <h4 className="font-medium text-foreground">Application Submitted</h4>
-                    <p className="text-sm text-muted-foreground">Received on {mockStatus.dateSubmitted}</p>
+                  <div className="flex-1 pt-1">
+                    <h4 className="font-medium text-foreground text-base tracking-tight opacity-70">Application Submitted</h4>
+                    <p className="text-sm text-muted-foreground mt-0.5">Received on {mockStatus.dateSubmitted}</p>
                   </div>
                 </div>
               </div>
