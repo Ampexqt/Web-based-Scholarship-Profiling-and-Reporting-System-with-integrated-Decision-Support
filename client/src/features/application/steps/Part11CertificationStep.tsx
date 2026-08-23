@@ -32,7 +32,7 @@ export default function Part11CertificationStep() {
           </div>
           <div className="text-sm font-medium leading-none">I certify that all information provided is true and correct. <span className="text-destructive">*</span></div>
         </label>
-        {errors.certifyTrue && <p className="text-xs text-destructive ml-7">{errors.certifyTrue.message}</p>}
+        
 
         <label className="flex items-start space-x-3 cursor-pointer">
           <div className="flex items-center h-5">
@@ -40,7 +40,7 @@ export default function Part11CertificationStep() {
           </div>
           <div className="text-sm font-medium leading-none">I certify that all uploaded documents are authentic and valid. <span className="text-destructive">*</span></div>
         </label>
-        {errors.certifyAuthentic && <p className="text-xs text-destructive ml-7">{errors.certifyAuthentic.message}</p>}
+        
 
         <label className="flex items-start space-x-3 cursor-pointer">
           <div className="flex items-center h-5">
@@ -48,7 +48,7 @@ export default function Part11CertificationStep() {
           </div>
           <div className="text-sm font-medium leading-none">I have read and understood the Data Privacy Consent and Declaration. <span className="text-destructive">*</span></div>
         </label>
-        {errors.dataPrivacyConsent && <p className="text-xs text-destructive ml-7">{errors.dataPrivacyConsent.message}</p>}
+        
       </div>
 
       <div className="border-t border-border pt-8 space-y-6">
