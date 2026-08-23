@@ -7,10 +7,19 @@ import { FileSpreadsheet, CalendarRange, Clock, CheckCircle2, ChevronRight, File
 
 export default function ReportsPage() {
   const [dateRange, setDateRange] = useState("30days");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
 
   const handleExport = async () => {
     try {
-      const data: any = await apiClient.get('/reports/tes-annex1', {
+      const params = new URLSearchParams();
+      if (dateRange) params.append('dateRange', dateRange);
+      if (dateRange === 'custom') {
+        if (fromDate) params.append('fromDate', fromDate);
+        if (toDate) params.append('toDate', toDate);
+      }
+
+      const data: any = await apiClient.get(`/reports/tes-annex1?${params.toString()}`, {
         responseType: 'blob'
       });
       const url = window.URL.createObjectURL(new Blob([data]));
@@ -38,7 +47,7 @@ export default function ReportsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Panel: Context & Visuals */}
         <div className="lg:col-span-5 bg-card border-2 border-border/80 rounded-2xl shadow-sm overflow-hidden flex flex-col relative h-full group transition-all hover:border-primary/30 hover:shadow-md">
-          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-accent to-primary opacity-90" />
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary via-primary/80 to-primary opacity-90" />
           <div className="p-8 flex-1 flex flex-col justify-center items-start">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 shadow-sm border border-primary/20 group-hover:scale-105 transition-transform duration-300">
               <FileSpreadsheet className="w-8 h-8 text-primary" />
@@ -50,15 +59,15 @@ export default function ReportsPage() {
             
             <div className="space-y-4 w-full">
               <div className="flex items-center gap-3 text-sm font-medium">
-                <CheckCircle2 className="w-5 h-5 text-accent" />
+                <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Pre-formatted headers & styling</span>
               </div>
               <div className="flex items-center gap-3 text-sm font-medium">
-                <CheckCircle2 className="w-5 h-5 text-accent" />
+                <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Auto-populates PWD & Address fields</span>
               </div>
               <div className="flex items-center gap-3 text-sm font-medium">
-                <CheckCircle2 className="w-5 h-5 text-accent" />
+                <CheckCircle2 className="w-5 h-5 text-primary" />
                 <span>Outputs native .xlsm with macros</span>
               </div>
             </div>
@@ -72,7 +81,7 @@ export default function ReportsPage() {
         {/* Right Panel: Export Configuration */}
         <div className="lg:col-span-7 bg-card border border-border rounded-2xl shadow-lg p-8 flex flex-col gap-8 relative overflow-hidden h-full">
           {/* Subtle background decoration */}
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -right-20 -top-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-5">
@@ -110,14 +119,24 @@ export default function ReportsPage() {
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">From Date</Label>
               <div className="relative">
                 <CalendarRange className="absolute left-3.5 top-3 w-4 h-4 text-muted-foreground/70" />
-                <Input type="date" className="pl-10 bg-background border-border focus-visible:ring-primary h-11 rounded-xl shadow-sm transition-shadow hover:shadow-md" />
+                <Input 
+                  type="date" 
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                  className="pl-10 bg-background border-border focus-visible:ring-primary h-11 rounded-xl shadow-sm transition-shadow hover:shadow-md" 
+                />
               </div>
             </div>
             <div className="space-y-2">
               <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">To Date</Label>
               <div className="relative">
                 <CalendarRange className="absolute left-3.5 top-3 w-4 h-4 text-muted-foreground/70" />
-                <Input type="date" className="pl-10 bg-background border-border focus-visible:ring-primary h-11 rounded-xl shadow-sm transition-shadow hover:shadow-md" />
+                <Input 
+                  type="date" 
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                  className="pl-10 bg-background border-border focus-visible:ring-primary h-11 rounded-xl shadow-sm transition-shadow hover:shadow-md" 
+                />
               </div>
             </div>
           </div>
@@ -126,10 +145,10 @@ export default function ReportsPage() {
             <Button 
               size="lg" 
               onClick={handleExport}
-              className="w-full h-16 text-base font-bold bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group flex items-center justify-between px-7 rounded-xl"
+              className="w-full h-16 text-base font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group flex items-center justify-between px-7 rounded-xl"
             >
               <span className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-accent-foreground/10 flex items-center justify-center">
+                <div className="w-8 h-8 rounded-full bg-primary-foreground/10 flex items-center justify-center">
                   <FileDown className="w-4 h-4 group-hover:scale-110 transition-transform" />
                 </div>
                 Generate Excel Report
