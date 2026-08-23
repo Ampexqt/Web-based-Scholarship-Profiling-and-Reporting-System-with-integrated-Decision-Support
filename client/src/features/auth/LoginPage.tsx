@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { apiClient, API_URL } from '@/lib/axios';
 import logo from '../../assets/logo.png';
 import loginProps from '../../assets/login-props.avif';
 
@@ -9,11 +10,37 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleGoogleLogin = () => {
+    // Determine the base URL dynamically so it works in production and localhost
+    window.location.href = `${API_URL}/auth/google`;
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login for now
-    navigate('/admin');
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const response = await apiClient.post(
+        '/auth/login',
+        { email, password }
+      );
+
+      if (response.data.success) {
+        localStorage.setItem('isLoggedIn', 'true');
+        navigate('/admin');
+      }
+    } catch (err: any) {
+      setError(
+        err.response?.data?.message || 
+        'Unable to connect to the server. Please ensure the backend is running.'
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -33,6 +60,12 @@ const LoginPage = () => {
               Enter your email below to login to your <span className="font-semibold text-foreground">ZPPSU Scholarship</span> account
             </p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-3 bg-destructive/10 border border-destructive/20 rounded-md text-destructive text-sm font-medium">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
@@ -74,10 +107,11 @@ const LoginPage = () => {
 
             <button
               type="submit"
-              className="inline-flex items-center justify-center rounded-full text-base font-medium transition-transform hover:scale-[0.99] active:scale-[0.97] bg-primary text-primary-foreground h-12 px-8 w-full group shadow-md mt-4"
+              disabled={isLoading}
+              className="inline-flex items-center justify-center rounded-full text-base font-medium transition-transform hover:scale-[0.99] active:scale-[0.97] disabled:opacity-70 disabled:hover:scale-100 bg-primary text-primary-foreground h-12 px-8 w-full group shadow-md mt-4"
             >
-              Login
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              {isLoading ? 'Logging in...' : 'Login'}
+              {!isLoading && <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />}
             </button>
           </form>
         </div>
