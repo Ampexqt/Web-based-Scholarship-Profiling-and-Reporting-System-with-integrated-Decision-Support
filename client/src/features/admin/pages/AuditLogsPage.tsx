@@ -70,7 +70,7 @@ export default function AuditLogsPage() {
       case 'SUSPEND_STAFF_ACCOUNT': return <Badge variant="destructive" className="gap-1.5"><Ban className="w-3 h-3" />Suspend Staff</Badge>;
       case 'ACTIVATE_STAFF_ACCOUNT': return <Badge variant="default" className="gap-1.5"><CheckCircle2 className="w-3 h-3" />Activate Staff</Badge>;
       case 'RESET_STAFF_PASSWORD': return <Badge variant="secondary" className="gap-1.5 text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900/50"><KeyRound className="w-3 h-3" />Reset Password</Badge>;
-      case 'DOWNLOAD_REPORT': return <Badge variant="secondary" className="gap-1.5 text-blue-600 border-blue-200 bg-blue-50 dark:bg-blue-950/30 dark:border-blue-900/50"><Download className="w-3 h-3" />Download Report</Badge>;
+      case 'DOWNLOAD_REPORT': return <Badge variant="secondary" className="gap-1.5 text-primary border-primary/20 bg-primary/10 hover:bg-primary/20"><Download className="w-3 h-3" />Download Report</Badge>;
       default: return <Badge variant="outline" className="gap-1.5"><Activity className="w-3 h-3" />{action}</Badge>;
     }
   };
