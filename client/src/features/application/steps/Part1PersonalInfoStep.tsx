@@ -57,7 +57,7 @@ export default function Part1PersonalInfoStep() {
         <div className="space-y-2 md:col-span-1">
           <label className="text-sm font-medium text-foreground">Student ID No <span className="text-destructive">*</span></label>
           <input placeholder="e.g. 23-12345" {...register("studentId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          {errors.studentId && <p className="text-xs text-destructive">{errors.studentId.message}</p>}
+          
         </div>
       </div>
 
@@ -65,12 +65,12 @@ export default function Part1PersonalInfoStep() {
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Last Name <span className="text-destructive">*</span></label>
           <input placeholder="e.g. Dela Cruz" {...register("lastName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
+          
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Given Name <span className="text-destructive">*</span></label>
           <input placeholder="e.g. Juan" {...register("givenName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          {errors.givenName && <p className="text-xs text-destructive">{errors.givenName.message}</p>}
+          
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Middle Name {!watch("noMiddleName") && <span className="text-destructive">*</span>}</label>
@@ -97,7 +97,7 @@ export default function Part1PersonalInfoStep() {
             />
             <span className="text-muted-foreground">Check if you do not have a middle name</span>
           </label>
-          {errors.middleName && <p className="text-xs text-destructive">{errors.middleName.message}</p>}
+          
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Extension</label>
@@ -122,7 +122,7 @@ export default function Part1PersonalInfoStep() {
               <option key={college.name} value={college.name}>{college.name}</option>
             ))}
           </select>
-          {errors.college && <p className="text-xs text-destructive">{errors.college.message}</p>}
+          
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Course / Program <span className="text-destructive">*</span></label>
@@ -132,7 +132,7 @@ export default function Part1PersonalInfoStep() {
               <option key={prog.name} value={prog.name}>{prog.name}</option>
             ))}
           </select>
-          {errors.course && <p className="text-xs text-destructive">{errors.course.message}</p>}
+          
         </div>
         {majors.length > 0 && (
           <div className="space-y-2">
@@ -147,7 +147,7 @@ export default function Part1PersonalInfoStep() {
                 <option key={m} value={m}>{m}</option>
               ))}
             </select>
-            {errors.major && <p className="text-xs text-destructive">{errors.major.message}</p>}
+            
           </div>
         )}
         <div className="space-y-2">
@@ -159,7 +159,7 @@ export default function Part1PersonalInfoStep() {
             <option value="3">3rd Year</option>
             <option value="4">4th Year</option>
           </select>
-          {errors.yearLevel && <p className="text-xs text-destructive">{errors.yearLevel.message}</p>}
+          
         </div>
       </div>
 
@@ -206,13 +206,13 @@ export default function Part1PersonalInfoStep() {
             <option value="Seventh Day Adventist">Seventh Day Adventist</option>
             <option value="Others">Others</option>
           </select>
-          {errors.religion && <p className="text-xs text-destructive">{errors.religion.message}</p>}
+          
         </div>
         {watch("religion") === "Others" && (
           <div className="space-y-2 md:col-span-2">
             <label className="text-sm font-medium text-foreground">Please specify Religion <span className="text-destructive">*</span></label>
             <input placeholder="Please specify your religion" {...register("religionOthers")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-            {errors.religionOthers && <p className="text-xs text-destructive">{errors.religionOthers.message}</p>}
+            
           </div>
         )}
       </div>
@@ -237,7 +237,7 @@ export default function Part1PersonalInfoStep() {
                 className="flex-1 h-10 rounded-none rounded-r-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" 
               />
             </div>
-            {errors.mobileNumber && <p className="text-xs text-destructive">{errors.mobileNumber.message}</p>}
+            
           </div>
         </div>
       </div>
