@@ -27,10 +27,22 @@ import {
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom"
 import { LayoutDashboard, Users, FileText, LogOut, CheckCircle, History } from "lucide-react"
 import logo from "@/assets/logo.png"
+import { apiClient } from "@/lib/axios"
 
 export default function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post('/auth/logout');
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      localStorage.removeItem('isLoggedIn');
+      navigate('/login');
+    }
+  }
 
   return (
     <SidebarProvider>
@@ -123,7 +135,10 @@ export default function AdminLayout() {
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction 
-                        onClick={() => navigate('/login')}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleLogout();
+                        }}
                         className="flex-1 h-12 text-base font-semibold bg-destructive text-white hover:bg-destructive/90 shadow-sm rounded-xl">
                         Sign Out
                       </AlertDialogAction>
