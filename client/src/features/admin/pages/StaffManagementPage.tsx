@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/axios';
+import axios from 'axios';
+import { apiClient, API_URL } from '@/lib/axios';
 import { toast } from 'sonner';
 import {
   Search, MoreHorizontal, UserPlus, Phone, Mail, Eye, EyeOff, Wand2, KeyRound, Ban, CheckCircle2, Copy
@@ -46,8 +47,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-
-const API_URL = 'http://localhost:5000/api';
 
 interface Staff {
   id: number;
