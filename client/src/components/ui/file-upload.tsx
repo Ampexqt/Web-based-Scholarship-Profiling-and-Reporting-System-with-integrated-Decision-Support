@@ -1,5 +1,5 @@
 import { useFormContext } from 'react-hook-form';
-import { Camera, CheckCircle2, FileUp } from 'lucide-react';
+import { Camera, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface FileUploadProps {
