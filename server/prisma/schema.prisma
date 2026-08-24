@@ -9,12 +9,39 @@ datasource db {
 
 // Example User table to get started
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  role      String   @default("student") // Could be admin, staff, student
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  name         String?
+  gender       String?
+  phone        String?
+  isActive     Boolean  @default(true)
+  role         String   @default("student") // Could be admin, staff, student
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  auditLogs    AuditLog[]
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      Int?
+  userRole    String?
+  action      String
+  
+  targetAppId String?  // e.g., APP-2026-2759
+  targetDoc   String?
+  
+  ipAddress   String?
+  userAgent   String?
+  deviceType  String?  // smartphone, tablet, desktop
+  os          String?  // iOS, Android, Windows, macOS
+  duration    Int?
+  notes       String?  @db.Text
+  
+  createdAt   DateTime @default(now())
+
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model Application {
@@ -27,6 +54,7 @@ model Application {
   college           String
   course            String
   status            String   @default("Pending")
+  remarks           String?
   
   // Grouped JSON data to easily store the remaining 70+ fields
   personalInfo      Json     
@@ -36,6 +64,7 @@ model Application {
   householdMembers  Json     
   academicInfo      Json
   specialCircumstances Json
+  verifiedDocuments Json?    @default("[]")
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
