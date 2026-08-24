@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import fs from 'fs';
 import path from 'path';
+import { createAuditLog } from './auditController';
 
 const prisma = new PrismaClient();
 
@@ -236,5 +237,194 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined
     });
+  }
+};
+
+export const getApplications = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const applications = await prisma.application.findMany({
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    // Map to a cleaner format for frontend
+    const formattedApps = applications.map((app: any) => {
+      const name = `${app.lastName}, ${app.givenName} ${app.middleName ? app.middleName[0] + '.' : ''}`.trim();
+      
+      // Determine if priority from special circumstances
+      let isPriority = false;
+      const priorityGroups: string[] = [];
+      
+      if (app.specialCircumstances) {
+        const sc = typeof app.specialCircumstances === 'string' ? JSON.parse(app.specialCircumstances) : app.specialCircumstances;
+        
+        if (sc.isPwd === 'Yes' || sc.isPwd === true || sc.isPwd === 'true') priorityGroups.push('pwd');
+        if (sc.isSoloParent === 'Yes' || sc.isSoloParent === true || sc.isSoloParent === 'true') priorityGroups.push('solo-parent');
+        if (sc.isIp === 'Yes' || sc.isIp === true || sc.isIp === 'true') priorityGroups.push('ip');
+        if (sc.isAthleteArtist === 'Yes' || sc.isAthleteArtist === true || sc.isAthleteArtist === 'true') priorityGroups.push('sports-arts');
+        if (sc.isIndigent === 'Yes' || sc.isIndigent === true || sc.isIndigent === 'true') priorityGroups.push('indigent');
+        
+        isPriority = priorityGroups.length > 0;
+      }
+
+      return {
+        id: app.referenceNumber,
+        name,
+        college: app.college,
+        course: app.course,
+        status: app.status,
+        date: app.createdAt,
+        isPriority,
+        priorityGroups
+      };
+    });
+
+    res.status(200).json({ success: true, applications: formattedApps });
+  } catch (error) {
+    console.error('Error fetching applications:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch applications' });
+  }
+};
+
+export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const total = await prisma.application.count();
+    const pending = await prisma.application.count({ where: { status: 'Pending' } });
+    const accepted = await prisma.application.count({ where: { status: 'Accepted' } });
+    const rejected = await prisma.application.count({ where: { status: 'Rejected' } });
+
+    // For priority groups, we need to inspect the JSON column. 
+    // This is simpler to do in memory for a small-to-medium dataset or with raw SQL.
+    // For simplicity, we'll fetch just what we need or do a full table scan if it's small.
+    // Given Prisma's limitations with JSON querying across all dialects, let's fetch all and count.
+    const allApps = await prisma.application.findMany({
+      select: { specialCircumstances: true }
+    });
+
+    let pwd = 0, soloParent = 0, ip = 0, athlete = 0, indigent = 0;
+
+    allApps.forEach(app => {
+      if (app.specialCircumstances) {
+        const sc: any = typeof app.specialCircumstances === 'string' ? JSON.parse(app.specialCircumstances) : app.specialCircumstances;
+        if (sc.isPwd === 'Yes' || sc.isPwd === 'true' || sc.isPwd === true) pwd++;
+        if (sc.isSoloParent === 'Yes' || sc.isSoloParent === 'true' || sc.isSoloParent === true) soloParent++;
+        if (sc.isIp === 'Yes' || sc.isIp === 'true' || sc.isIp === true) ip++;
+        if (sc.isAthleteArtist === 'Yes' || sc.isAthleteArtist === 'true' || sc.isAthleteArtist === true) athlete++;
+        if (sc.isIndigent === 'Yes' || sc.isIndigent === 'true' || sc.isIndigent === true) indigent++;
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        total,
+        pending,
+        accepted,
+        rejected
+      },
+      priorityGroups: {
+        pwd,
+        soloParent,
+        ip,
+        athlete,
+        indigent
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch stats' });
+  }
+};
+
+export const getApplicationById = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const app = await prisma.application.findUnique({
+      where: { referenceNumber: id }
+    });
+
+    if (!app) {
+      res.status(404).json({ success: false, message: 'Application not found' });
+      return;
+    }
+
+    res.status(200).json({ success: true, application: app });
+  } catch (error) {
+    console.error('Error fetching application:', error);
+    res.status(500).json({ success: false, message: 'Failed to fetch application' });
+  }
+};
+
+export const updateApplicationStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { status, remarks } = req.body;
+    
+    const app = await prisma.application.update({
+      where: { referenceNumber: id },
+      data: { 
+        status,
+        remarks: remarks || null
+      }
+    });
+
+    const user = (req as any).user;
+    if (user) {
+      let action = 'APP_STATUS_UPDATE';
+      if (status === 'Approved') action = 'APP_APPROVE';
+      else if (status === 'Rejected') action = 'APP_REJECT';
+      else if (status === 'Flagged') action = 'APP_FLAG';
+
+      await createAuditLog(user.userId, user.role, action, id, null, req, undefined, remarks || '');
+    }
+
+    res.status(200).json({ success: true, application: app });
+  } catch (error) {
+    console.error('Error updating application status:', error);
+    res.status(500).json({ success: false, message: 'Failed to update application status' });
+  }
+};
+
+export const verifyDocument = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { documentUrl, isVerified } = req.body;
+    
+    const app = await prisma.application.findUnique({
+      where: { referenceNumber: id }
+    });
+
+    if (!app) {
+      res.status(404).json({ success: false, message: 'Application not found' });
+      return;
+    }
+
+    let verifiedDocs: string[] = [];
+    if (app.verifiedDocuments) {
+      verifiedDocs = typeof app.verifiedDocuments === 'string' ? JSON.parse(app.verifiedDocuments) : app.verifiedDocuments;
+    }
+
+    if (isVerified && !verifiedDocs.includes(documentUrl)) {
+      verifiedDocs.push(documentUrl);
+    } else if (!isVerified) {
+      verifiedDocs = verifiedDocs.filter(doc => doc !== documentUrl);
+    }
+    
+    const updatedApp = await prisma.application.update({
+      where: { referenceNumber: id },
+      data: { 
+        verifiedDocuments: verifiedDocs as any
+      }
+    });
+
+    const user = (req as any).user;
+    if (user) {
+      const action = isVerified ? 'DOC_VERIFY' : 'DOC_UNVERIFY';
+      await createAuditLog(user.userId, user.role, action, id, documentUrl, req);
+    }
+
+    res.status(200).json({ success: true, verifiedDocuments: verifiedDocs });
+  } catch (error) {
+    console.error('Error updating document verification:', error);
+    res.status(500).json({ success: false, message: 'Failed to verify document' });
   }
 };
