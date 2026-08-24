@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,30 +12,29 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CheckCircle, XCircle, Flag } from "lucide-react";
 
 interface ApplicationReviewActionsProps {
   currentStatus: string;
   onStatusChange: (status: string, remarks?: string) => void;
+  isActionDisabled?: boolean;
 }
 
-export function ApplicationReviewActions({ currentStatus, onStatusChange }: ApplicationReviewActionsProps) {
+export function ApplicationReviewActions({ currentStatus, onStatusChange, isActionDisabled }: ApplicationReviewActionsProps) {
   const [remarks, setRemarks] = useState('');
   
   return (
     <div className="flex flex-wrap gap-3">
       {/* Approve Action */}
       <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="gap-1.5"
-          >
-            <CheckCircle className="w-4 h-4" />
-            Approve
-          </Button>
+        <AlertDialogTrigger 
+          disabled={isActionDisabled}
+          className={buttonVariants({ variant: "default", size: "sm", className: `gap-1.5 ${isActionDisabled ? 'opacity-50 cursor-not-allowed' : ''}` })}
+        >
+          <CheckCircle className="w-4 h-4" />
+          Approve
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -58,11 +57,11 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange }: Appl
 
       {/* Reject Action */}
       <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" className="gap-2">
-            <XCircle className="w-4 h-4" />
-            Reject
-          </Button>
+        <AlertDialogTrigger 
+          className={buttonVariants({ variant: "destructive", className: "gap-2" })}
+        >
+          <XCircle className="w-4 h-4" />
+          Reject
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -73,13 +72,19 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange }: Appl
           </AlertDialogHeader>
           <div className="py-4">
             <Label htmlFor="reject-reason">Rejection Reason</Label>
-            <Input 
-              id="reject-reason" 
-              placeholder="e.g. Incomplete grades document" 
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              className="mt-2"
-            />
+            <div className="relative">
+              <Textarea 
+                id="reject-reason" 
+                placeholder="e.g. Incomplete grades document" 
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                maxLength={250}
+                className="mt-2 min-h-[100px] max-h-[200px] pb-6"
+              />
+              <span className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                {remarks.length}/250
+              </span>
+            </div>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setRemarks('')}>Cancel</AlertDialogCancel>
@@ -99,11 +104,11 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange }: Appl
 
       {/* Flag Action */}
       <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="outline" className="gap-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200">
-            <Flag className="w-4 h-4" />
-            Flag for Review
-          </Button>
+        <AlertDialogTrigger 
+          className={buttonVariants({ variant: "outline", className: "gap-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200" })}
+        >
+          <Flag className="w-4 h-4" />
+          Flag for Review
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -114,13 +119,19 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange }: Appl
           </AlertDialogHeader>
           <div className="py-4">
             <Label htmlFor="flag-reason">Issue Description</Label>
-            <Input 
-              id="flag-reason" 
-              placeholder="e.g. Discrepancy in declared income" 
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-              className="mt-2"
-            />
+            <div className="relative">
+              <Textarea 
+                id="flag-reason" 
+                placeholder="e.g. Discrepancy in declared income" 
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+                maxLength={250}
+                className="mt-2 min-h-[100px] max-h-[200px] pb-6"
+              />
+              <span className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                {remarks.length}/250
+              </span>
+            </div>
           </div>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setRemarks('')}>Cancel</AlertDialogCancel>
