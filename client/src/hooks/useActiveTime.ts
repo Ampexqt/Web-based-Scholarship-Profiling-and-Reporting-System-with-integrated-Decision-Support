@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 export function useActiveTime(targetAppId: string) {
   const [activeSeconds, setActiveSeconds] = useState(0);
   const isActive = useRef(true);
-  const idleTimeout = useRef<NodeJS.Timeout | null>(null);
-  const interval = useRef<NodeJS.Timeout | null>(null);
+  const idleTimeout = useRef<any>(null);
+  const interval = useRef<any>(null);
 
   const IDLE_THRESHOLD = 30000; // 30 seconds of no interaction = idle
 
