@@ -70,15 +70,33 @@ export default function ApplicationsPage() {
     const matchesCollege = filterCollege === "All" || app.college === filterCollege;
 
     if (activeTab === "all") return matchesSearch && matchesCollege;
+    
+    // Handle the Pending / Pending Review unification
+    if (activeTab === "pending review") {
+      return matchesSearch && matchesCollege && (app.status.toLowerCase() === "pending review" || app.status.toLowerCase() === "pending");
+    }
+
     return matchesSearch && matchesCollege && app.status.toLowerCase() === activeTab;
+  }).sort((a, b) => {
+    // FIFO (oldest first) for Pending Review queue
+    if (activeTab === "pending review") {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    }
+    // Default to newest first
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case 'Pending':
       case 'Pending Review':
         return <Badge variant="secondary" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border-transparent">Pending Review</Badge>;
       case 'Flagged':
-        return <Badge variant="destructive" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20 border">Flagged</Badge>;
+        return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">Flagged</Badge>;
+      case 'Approved':
+        return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">Approved</Badge>;
+      case 'Rejected':
+        return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">Rejected</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -99,11 +117,13 @@ export default function ApplicationsPage() {
 
         {/* Toolbar */}
         <div className="p-4 border-b border-border flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-background/50">
-          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto">
-            <TabsList className="grid grid-cols-3 sm:flex bg-muted/50 p-1 rounded-lg">
-              <TabsTrigger value="all" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">All</TabsTrigger>
-              <TabsTrigger value="pending review" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Pending Review</TabsTrigger>
-              <TabsTrigger value="flagged" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Flagged</TabsTrigger>
+          <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab} className="w-full sm:w-auto overflow-x-auto">
+            <TabsList className="inline-flex w-max sm:w-auto bg-muted/50 p-1 rounded-lg">
+              <TabsTrigger value="all" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm px-3">All</TabsTrigger>
+              <TabsTrigger value="pending review" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm px-3">Pending Review</TabsTrigger>
+              <TabsTrigger value="flagged" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm px-3">Flagged</TabsTrigger>
+              <TabsTrigger value="approved" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm px-3">Approved</TabsTrigger>
+              <TabsTrigger value="rejected" className="rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm px-3">Rejected</TabsTrigger>
             </TabsList>
           </Tabs>
 
