@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Monitor, Smartphone, Tablet, Activity, Filter, FileText, Download, CalendarDays, Users, MousePointer2, LogIn, LogOut, Eye, EyeOff, CheckCircle, XCircle, CheckCircle2, Flag, X, FileSpreadsheet, ChevronDown, CheckIcon, UserPlus, Ban, KeyRound } from 'lucide-react';
+import { Search, Monitor, Smartphone, Tablet, Activity, Filter, FileText, Download, CalendarDays, Users, MousePointer2, LogIn, LogOut, Eye, EyeOff, CheckCircle, XCircle, CheckCircle2, Flag, X, FileSpreadsheet, ChevronDown, CheckIcon, UserPlus, Ban, KeyRound, Undo } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -66,6 +66,7 @@ export default function AuditLogsPage() {
       case 'APP_APPROVE': return <Badge variant="default" className="gap-1.5"><CheckCircle2 className="w-3 h-3" />Approve App</Badge>;
       case 'APP_REJECT': return <Badge variant="destructive" className="gap-1.5"><XCircle className="w-3 h-3" />Reject App</Badge>;
       case 'APP_FLAG': return <Badge variant="destructive" className="gap-1.5"><Flag className="w-3 h-3" />Flag App</Badge>;
+      case 'APP_PENDING': return <Badge variant="secondary" className="gap-1.5"><Undo className="w-3 h-3" />Revert to Pending</Badge>;
       case 'CREATE_STAFF_ACCOUNT': return <Badge variant="default" className="gap-1.5"><UserPlus className="w-3 h-3" />Create Staff</Badge>;
       case 'SUSPEND_STAFF_ACCOUNT': return <Badge variant="destructive" className="gap-1.5"><Ban className="w-3 h-3" />Suspend Staff</Badge>;
       case 'ACTIVATE_STAFF_ACCOUNT': return <Badge variant="default" className="gap-1.5"><CheckCircle2 className="w-3 h-3" />Activate Staff</Badge>;
