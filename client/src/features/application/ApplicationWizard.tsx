@@ -125,6 +125,7 @@ export default function ApplicationWizard() {
     if (isStepValid) {
       if (currentStep < STEPS.length - 1) {
         setCurrentStep((prev) => prev + 1);
+        setTimeout(() => window.scrollTo(0, 0), 10);
       }
     } else {
       // Extract specific error messages or nicely formatted field names for the current step
@@ -161,6 +162,7 @@ export default function ApplicationWizard() {
   const prevStep = () => {
     if (currentStep > 0) {
       setCurrentStep((prev) => prev - 1);
+      setTimeout(() => window.scrollTo(0, 0), 10);
     }
   };
 
@@ -321,8 +323,14 @@ export default function ApplicationWizard() {
                       const originalBorderRadius = modalRef.current.style.borderRadius;
                       modalRef.current.style.borderRadius = '24px';
                       
+                      // Get actual computed background color to prevent OS/Theme mismatch (which causes black backgrounds)
+                      const computedStyle = window.getComputedStyle(modalRef.current);
+                      const bgColor = computedStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || computedStyle.backgroundColor === 'transparent' 
+                        ? (document.documentElement.classList.contains('dark') ? '#020817' : '#ffffff')
+                        : computedStyle.backgroundColor;
+                      
                       const dataUrl = await htmlToImage.toPng(modalRef.current, {
-                        backgroundColor: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#020817' : '#ffffff',
+                        backgroundColor: bgColor,
                         pixelRatio: 3, // Higher quality
                       });
                       
