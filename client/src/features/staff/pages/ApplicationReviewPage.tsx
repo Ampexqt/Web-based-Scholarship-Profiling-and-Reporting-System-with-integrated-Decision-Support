@@ -147,8 +147,8 @@ export default function ApplicationReviewPage() {
               religion: pInfo.religion === 'Others' ? pInfo.religionOthers : pInfo.religion || "",
               email: pInfo.emailAddress || "",
               phone: pInfo.mobileNumber || "",
-              currentAddress: `${addrInfo.current?.houseBlock || ""} ${addrInfo.current?.street || ""}, ${addrInfo.current?.barangay || ""}, ${addrInfo.current?.municipality || ""}, ${addrInfo.current?.province || ""}`,
-              permanentAddress: addrInfo.permanent?.sameAsCurrent ? "Same as Current Address" : `${addrInfo.permanent?.houseBlock || ""} ${addrInfo.permanent?.street || ""}, ${addrInfo.permanent?.barangay || ""}, ${addrInfo.permanent?.municipality || ""}, ${addrInfo.permanent?.province || ""}`,
+              currentAddress: `${addrInfo.current?.houseBlock || ""} ${addrInfo.current?.street || ""}, ${addrInfo.current?.barangay || ""}, ${addrInfo.current?.municipality || ""}, ${addrInfo.current?.province || ""} ${addrInfo.current?.zipCode || ""}`.trim().replace(/,\s*$/, ""),
+              permanentAddress: addrInfo.permanent?.sameAsCurrent ? "Same as Current Address" : `${addrInfo.permanent?.houseBlock || ""} ${addrInfo.permanent?.street || ""}, ${addrInfo.permanent?.barangay || ""}, ${addrInfo.permanent?.municipality || ""}, ${addrInfo.permanent?.province || ""} ${addrInfo.permanent?.zipCode || ""}`.trim().replace(/,\s*$/, ""),
               studentClassification: pInfo.studentClassification || "Regular"
             },
             academicInfo: {
@@ -261,9 +261,35 @@ export default function ApplicationReviewPage() {
           
           setApp(mappedApp);
           setStatus(data.status || "Pending");
-          setHistory([
-            { id: 'h1', action: 'Application Submitted', date: mappedApp.submittedAt, actor: 'Applicant' }
-          ]);
+          
+          let initialHistory = [];
+          if (res.historyLogs && res.historyLogs.length > 0) {
+            initialHistory = res.historyLogs.map((log: any) => ({
+              id: log.id,
+              action: `Status changed to ${
+                log.action === 'APP_APPROVE' ? 'Approved' : 
+                log.action === 'APP_REJECT' ? 'Rejected' : 
+                log.action === 'APP_FLAG' ? 'Flagged' : 
+                log.action === 'APP_PENDING' ? 'Pending Review' : 'Updated'
+              }${log.notes ? ` - Reason: ${log.notes}` : ''}`,
+              date: new Date(log.createdAt).toLocaleString('en-US', { 
+                month: 'short', day: 'numeric', year: 'numeric',
+                hour: 'numeric', minute: '2-digit', hour12: true 
+              }),
+              actor: log.user?.name || 'Staff User'
+            }));
+          }
+          
+          initialHistory.push({
+            id: 'h1', action: 'Application Submitted', 
+            date: new Date(mappedApp.submittedAt).toLocaleString('en-US', { 
+              month: 'short', day: 'numeric', year: 'numeric',
+              hour: 'numeric', minute: '2-digit', hour12: true 
+            }), 
+            actor: 'Applicant'
+          });
+          
+          setHistory(initialHistory);
         }
       } catch (error) {
         console.error("Failed to fetch application:", error);
@@ -324,10 +350,11 @@ export default function ApplicationReviewPage() {
 
   const getStatusBadge = (currentStatus: string) => {
     switch (currentStatus) {
+      case 'Pending':
       case 'Pending Review': return <Badge variant="secondary" className="bg-secondary text-secondary-foreground">Pending Review</Badge>;
-      case 'Flagged': return <Badge variant="destructive" className="bg-destructive/10 text-destructive border-destructive/20 border">Flagged</Badge>;
-      case 'Approved': return <Badge variant="default" className="bg-primary text-primary-foreground">Approved</Badge>;
-      case 'Rejected': return <Badge variant="destructive">Rejected</Badge>;
+      case 'Flagged': return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Flagged</Badge>;
+      case 'Approved': return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">Approved</Badge>;
+      case 'Rejected': return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">Rejected</Badge>;
       default: return <Badge variant="outline">{currentStatus}</Badge>;
     }
   };
@@ -380,7 +407,7 @@ export default function ApplicationReviewPage() {
             )}
           </div>
           
-          <ApplicationReviewActions currentStatus={status} onStatusChange={handleStatusChange} isActionDisabled={verifiedDocs.length < totalDocs && status === 'Pending Review'} />
+          <ApplicationReviewActions currentStatus={status} onStatusChange={handleStatusChange} isActionDisabled={verifiedDocs.length < totalDocs} />
         </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
