@@ -11,8 +11,8 @@ const getApiUrl = () => {
     return '/api'; // Use relative path in production
   }
   
-  // In development, point to the backend running on port 5000 of the same host
-  return `http://${window.location.hostname}:5000/api`;
+  // In development, point to the Vite proxy to avoid firewall and CORS issues on mobile devices
+  return '/api';
 };
 
 export const getBaseUrl = () => {
@@ -23,8 +23,7 @@ export const getBaseUrl = () => {
   if (import.meta.env.PROD) {
     return ''; 
   }
-  
-  return `http://${window.location.hostname}:5000`;
+  return ''; // Use relative path to rely on Vite proxy
 };
 
 export const API_URL = getApiUrl();
