@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { toast } from 'sonner';
 import { apiClient, API_URL } from '@/lib/axios';
 import logo from '../../assets/logo.png';
 import loginProps from '../../assets/login-props.avif';
@@ -21,21 +22,32 @@ const LoginPage = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    // Client hasn't paid yet, block staff login with a maintenance message
+    // but allow the main admin account to access the system
+    if (email.toLowerCase() !== 'admin@zppsu.edu.ph') {
+      toast.info('System Maintenance in Progress', {
+        description: 'The staff portal is currently undergoing scheduled maintenance. Please try again later or contact the administrator.'
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const response = await apiClient.post(
+      const response: any = await apiClient.post(
         '/auth/login',
         { email, password }
       );
 
-      if (response.data.success) {
+      if (response && response.success) {
         localStorage.setItem('isLoggedIn', 'true');
         navigate('/admin');
       }
     } catch (err: any) {
       setError(
         err.response?.data?.message || 
+        err.message ||
         'Unable to connect to the server. Please ensure the backend is running.'
       );
     } finally {
