@@ -99,20 +99,16 @@ export default function StaffManagementPage() {
   };
 
   const generateRandomPassword = () => {
-    const chars = 'abcdefghijklmnopqrstuvwxyz';
-    const caps = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const nums = '0123456789';
-    const specials = '!@#$%^&*()_+';
-    const allChars = chars + caps + nums + specials;
-    const length = 12;
-    let generated = '';
-    generated += caps[Math.floor(Math.random() * caps.length)];
-    generated += nums[Math.floor(Math.random() * nums.length)];
-    generated += specials[Math.floor(Math.random() * specials.length)];
-    for (let i = 3; i < length; i++) {
-      generated += allChars.charAt(Math.floor(Math.random() * allChars.length));
-    }
-    return generated.split('').sort(() => 0.5 - Math.random()).join('');
+    const adjectives = ['Brave', 'Calm', 'Bright', 'Clear', 'Cool', 'Fresh', 'Happy', 'Kind', 'Smart', 'Warm', 'Swift', 'Solid', 'Grand', 'Brisk'];
+    const nouns = ['Apple', 'Bird', 'Star', 'Tree', 'River', 'Ocean', 'Mount', 'Cloud', 'Sky', 'Moon', 'Tiger', 'Lion', 'Bear', 'Hawk'];
+    const symbols = ['!', '@', '#', '$', '%', '&', '*'];
+    
+    const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)].toLowerCase();
+    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+    const num = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+    
+    return `${adj}${noun}${symbol}${num}`;
   };
 
   const handleGeneratePasswordForForm = () => {
