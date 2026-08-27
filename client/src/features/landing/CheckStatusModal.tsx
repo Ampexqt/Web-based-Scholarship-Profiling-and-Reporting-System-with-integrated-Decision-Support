@@ -20,10 +20,16 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
     e.preventDefault();
     if (!reference) return;
     
+    // Dismiss mobile keyboard so user can see the result
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur();
+    }
+    
     setStatus('loading');
     
     try {
-      const res: any = await apiClient.get(`/applications/${reference.toUpperCase()}`);
+      const cleanReference = reference.trim().toUpperCase();
+      const res: any = await apiClient.get(`/applications/${cleanReference}?includeHistory=false`);
       if (res.success && res.application) {
         setMockStatus({
           ref: res.application.referenceNumber,
@@ -111,27 +117,32 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
                 <div className="relative z-10 flex items-start gap-4 pb-8">
                   <div className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background ring-4 ring-background ${
                     mockStatus.status === 'Rejected' ? 'text-rose-500' :
-                    mockStatus.status === 'Flagged' ? 'text-amber-500' :
                     mockStatus.status === 'Approved' ? 'text-foreground' :
                     'text-blue-500'
                   }`}>
                     {mockStatus.status === 'Rejected' ? <XCircle size={20} className="fill-rose-50 text-rose-500" /> :
-                     mockStatus.status === 'Flagged' ? <Flag size={18} className="fill-amber-50 text-amber-500" /> :
                      mockStatus.status === 'Approved' ? <CheckCircle2 size={20} className="fill-muted text-foreground" /> :
                      <Clock size={20} className="fill-blue-50 text-blue-500" />}
                   </div>
                   
                   <div className="flex-1 pt-1">
-                    <h4 className="font-medium text-foreground text-base tracking-tight">{mockStatus.status}</h4>
+                    <h4 className="font-medium text-foreground text-base tracking-tight">
+                      {mockStatus.status === 'Pending' || mockStatus.status === 'Pending Review' || mockStatus.status === 'Flagged' 
+                        ? 'Under Review' 
+                        : mockStatus.status}
+                    </h4>
                     <p className="text-sm text-muted-foreground mt-0.5">
-                      {mockStatus.status === 'Pending' ? 'Currently in: Document Verification' : 
-                       mockStatus.status === 'Approved' ? 'Congratulations! Your application has been approved.' :
-                       'Please review the remarks below.'}
+                      {mockStatus.status === 'Pending' || mockStatus.status === 'Pending Review' || mockStatus.status === 'Flagged' 
+                        ? 'Your application is currently being evaluated by our team.' : 
+                       mockStatus.status === 'Approved' 
+                        ? 'Congratulations! Your application has been approved.' :
+                       'Unfortunately, your application was not approved. Please see the reason below.'}
                     </p>
                     
-                    {mockStatus.remarks && (
-                      <div className="mt-3 p-3.5 bg-muted/30 rounded-lg border border-border/50 shadow-sm">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Remarks / Notes</p>
+                    {/* Only ever show remarks to the applicant if they are explicitly Rejected */}
+                    {mockStatus.remarks && mockStatus.status === 'Rejected' && (
+                      <div className="mt-3 p-3.5 bg-rose-50/50 dark:bg-rose-950/20 rounded-lg border border-rose-100 dark:border-rose-900/50 shadow-sm">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1">Reason for Rejection</p>
                         <p className="text-sm text-foreground/90 leading-relaxed">{mockStatus.remarks}</p>
                       </div>
                     )}
