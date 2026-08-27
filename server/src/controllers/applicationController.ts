@@ -347,7 +347,23 @@ export const getApplicationById = async (req: Request, res: Response): Promise<v
       return;
     }
 
-    res.status(200).json({ success: true, application: app });
+    let historyLogs: any[] = [];
+    
+    // Only query history if requested (skips expensive audit log scan for applicant tracking)
+    if (req.query.includeHistory !== 'false') {
+      historyLogs = await prisma.auditLog.findMany({
+        where: { 
+          targetAppId: id,
+          action: { in: ['APP_APPROVE', 'APP_REJECT', 'APP_FLAG', 'APP_STATUS_UPDATE', 'APP_PENDING'] }
+        },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { name: true } }
+        }
+      });
+    }
+
+    res.status(200).json({ success: true, application: app, historyLogs });
   } catch (error) {
     console.error('Error fetching application:', error);
     res.status(500).json({ success: false, message: 'Failed to fetch application' });
@@ -373,6 +389,7 @@ export const updateApplicationStatus = async (req: Request, res: Response): Prom
       if (status === 'Approved') action = 'APP_APPROVE';
       else if (status === 'Rejected') action = 'APP_REJECT';
       else if (status === 'Flagged') action = 'APP_FLAG';
+      else if (status === 'Pending Review') action = 'APP_PENDING';
 
       await createAuditLog(user.userId, user.role, action, id, null, req, undefined, remarks || '');
     }
