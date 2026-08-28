@@ -25,37 +25,53 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const referenceNumber = `APP-${year}-${randomNum}`;
     
-    // Create folder for applicant
+    // Create folder for applicant (only strictly needed for local, but keep to avoid errors if logic changes)
     const applicantUploadDir = path.join(process.cwd(), 'uploads', referenceNumber);
     if (!fs.existsSync(applicantUploadDir)) {
       fs.mkdirSync(applicantUploadDir, { recursive: true });
     }
 
+    const isProduction = process.env.NODE_ENV === 'production';
     const files = req.files as Express.Multer.File[] | undefined;
     const filePaths: Record<string, string> = {};
+    
     if (files) {
-      files.forEach(f => {
-        // Move file from temporary uploads/ to uploads/APP-.../
-        const newFileName = `${referenceNumber}_${f.fieldname}${path.extname(f.originalname)}`;
-        const newFilePath = path.join(applicantUploadDir, newFileName);
-        fs.renameSync(f.path, newFilePath);
-        
-        filePaths[f.fieldname] = path.relative(process.cwd(), newFilePath);
-      });
+      for (const f of files) {
+        if (isProduction && f.buffer) {
+          // Import here to avoid top-level issues if not needed or add to top
+          const { uploadToSupabase } = require('../utils/supabaseStorage');
+          const newFileName = `${referenceNumber}/${referenceNumber}_${f.fieldname}${path.extname(f.originalname)}`;
+          const publicUrl = await uploadToSupabase(f.buffer, newFileName, f.mimetype);
+          filePaths[f.fieldname] = publicUrl;
+        } else if (f.path) {
+          // Local storage (development)
+          const newFileName = `${referenceNumber}_${f.fieldname}${path.extname(f.originalname)}`;
+          const newFilePath = path.join(applicantUploadDir, newFileName);
+          fs.renameSync(f.path, newFilePath);
+          
+          filePaths[f.fieldname] = path.relative(process.cwd(), newFilePath);
+        }
+      }
     }
     
     if (data.uploadDigitalSignature && data.uploadDigitalSignature.startsWith('data:image')) {
       // Extract base64 and save as image file
       const matches = data.uploadDigitalSignature.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
       if (matches && matches.length === 3) {
-        const ext = matches[1].split('/')[1] === 'jpeg' ? '.jpg' : '.png';
+        const mimeType = matches[1];
+        const ext = mimeType.split('/')[1] === 'jpeg' ? '.jpg' : '.png';
         const signatureFileName = `${referenceNumber}_digitalSignature${ext}`;
-        const signatureFilePath = path.join(applicantUploadDir, signatureFileName);
         
-        fs.writeFileSync(signatureFilePath, Buffer.from(matches[2], 'base64'));
-        
-        // Update data to point to the file path instead of base64
-        data.uploadDigitalSignature = path.relative(process.cwd(), signatureFilePath);
+        if (isProduction) {
+          const { uploadToSupabase } = require('../utils/supabaseStorage');
+          const buffer = Buffer.from(matches[2], 'base64');
+          const publicUrl = await uploadToSupabase(buffer, `${referenceNumber}/${signatureFileName}`, mimeType);
+          data.uploadDigitalSignature = publicUrl;
+        } else {
+          const signatureFilePath = path.join(applicantUploadDir, signatureFileName);
+          fs.writeFileSync(signatureFilePath, Buffer.from(matches[2], 'base64'));
+          data.uploadDigitalSignature = path.relative(process.cwd(), signatureFilePath);
+        }
       }
     }
     
