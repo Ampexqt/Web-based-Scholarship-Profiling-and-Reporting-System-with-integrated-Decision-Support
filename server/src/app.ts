@@ -11,8 +11,13 @@ const app = express();
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
+const isProduction = process.env.NODE_ENV === 'production';
+const allowedOrigin = isProduction 
+  ? (process.env.FRONTEND_URL || 'https://your-production-url.vercel.app') 
+  : 'http://localhost:5173';
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: allowedOrigin,
   credentials: true,
 }));
 app.use(express.json()); // Parse JSON payloads
