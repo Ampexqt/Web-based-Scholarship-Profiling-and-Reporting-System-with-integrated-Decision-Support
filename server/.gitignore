@@ -39,3 +39,6 @@ node_modules/
 # Compiled TS (if you add TypeScript later)
 dist/
 build/
+
+# User Uploads
+uploads/
