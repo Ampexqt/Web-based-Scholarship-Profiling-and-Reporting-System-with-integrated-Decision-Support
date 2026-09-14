@@ -1,0 +1,104 @@
+[
+  {
+    "code": "010000000",
+    "name": "Ilocos Region",
+    "region_name": "Region I",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "020000000",
+    "name": "Cagayan Valley",
+    "region_name": "Region II",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "030000000",
+    "name": "Central Luzon",
+    "region_name": "Region III",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "040000000",
+    "name": "CALABARZON",
+    "region_name": "Region IV-A",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "050000000",
+    "name": "Bicol Region",
+    "region_name": "Region V",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "060000000",
+    "name": "Western Visayas",
+    "region_name": "Region VI",
+    "island_group_code": "visayas"
+  },
+  {
+    "code": "070000000",
+    "name": "Central Visayas",
+    "region_name": "Region VII",
+    "island_group_code": "visayas"
+  },
+  {
+    "code": "080000000",
+    "name": "Eastern Visayas",
+    "region_name": "Region VIII",
+    "island_group_code": "visayas"
+  },
+  {
+    "code": "090000000",
+    "name": "Zamboanga Peninsula",
+    "region_name": "Region IX",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "100000000",
+    "name": "Northern Mindanao",
+    "region_name": "Region X",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "110000000",
+    "name": "Davao Region",
+    "region_name": "Region XI",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "120000000",
+    "name": "SOCCSKSARGEN",
+    "region_name": "Region XII",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "130000000",
+    "name": "NCR",
+    "region_name": "National Capital Region",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "140000000",
+    "name": "CAR",
+    "region_name": "Cordillera Administrative Region",
+    "island_group_code": "luzon"
+  },
+  {
+    "code": "150000000",
+    "name": "BARMM",
+    "region_name": "Bangsamoro Autonomous Region in Muslim Mindanao",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "160000000",
+    "name": "Caraga",
+    "region_name": "Region XIII",
+    "island_group_code": "mindanao"
+  },
+  {
+    "code": "170000000",
+    "name": "MIMAROPA",
+    "region_name": "Region IV-B",
+    "island_group_code": "luzon"
+  }
+]
