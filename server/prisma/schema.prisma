@@ -68,6 +68,7 @@ model Application {
 
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  flags             FlaggedApplication[]
 }
 
 model ph_regions {
@@ -96,4 +97,43 @@ model ph_barangays {
   region_code   String
   province_code String?
   city_code     String?
+}
+
+model OfficialRecordUpload {
+  id          Int      @id @default(autoincrement())
+  fileName    String
+  uploadDate  DateTime @default(now())
+  recordCount Int
+  uploaderId  Int?
+
+  records     OfficialScholarRecord[]
+}
+
+model OfficialScholarRecord {
+  id                 Int      @id @default(autoincrement())
+  uploadId           Int
+  upload             OfficialRecordUpload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  
+  firstName          String
+  lastName           String
+  middleName         String?
+  scholarshipProgram String
+  listReference      String?
+  studentId          String?
+  rawData            Json?
+  
+  flags              FlaggedApplication[]
+}
+
+model FlaggedApplication {
+  id                 Int      @id @default(autoincrement())
+  applicationId      Int
+  application        Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  
+  officialRecordId   Int
+  officialRecord     OfficialScholarRecord @relation(fields: [officialRecordId], references: [id], onDelete: Cascade)
+  
+  matchReason        String
+  dateFlagged        DateTime @default(now())
+  isResolved         Boolean  @default(false)
 }
