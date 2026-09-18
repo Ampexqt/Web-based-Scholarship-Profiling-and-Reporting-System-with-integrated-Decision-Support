@@ -8,6 +8,7 @@ import authRoutes from './authRoutes';
 import auditRoutes from './auditRoutes';
 import reportRoutes from './reportRoutes';
 import staffRoutes from './staffRoutes';
+import decisionSupportRoutes from './decisionSupport.routes';
 
 // Health check route
 router.get('/health', checkHealth);
@@ -29,5 +30,8 @@ router.use('/reports', reportRoutes);
 
 // Staff routes
 router.use('/staff', staffRoutes);
+
+// Decision Support routes
+router.use('/decision-support', decisionSupportRoutes);
 
 export default router;
