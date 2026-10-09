@@ -69,13 +69,13 @@ export default function RecentApplicationsTable() {
           <TableBody>
             {isLoading ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                   Loading recent applications...
                 </TableCell>
               </TableRow>
             ) : recentApplications.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                   No recent applications found.
                 </TableCell>
               </TableRow>

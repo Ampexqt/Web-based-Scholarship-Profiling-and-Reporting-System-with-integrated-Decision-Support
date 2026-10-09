@@ -236,20 +236,17 @@ const crossReferenceRecords = async (uploadId: number) => {
   });
 
   const applications = await prisma.application.findMany({
-    where: { status: 'Pending' }
+    where: { status: { in: ['Pending', 'Pending Review'] } }
   });
 
   const flagsToInsert = [];
+  const flaggedAppIds = new Set<number>();
 
   for (const record of newRecords) {
     for (const app of applications) {
       const recordFullName = (record.lastName + ' ' + record.firstName + ' ' + (record.middleName || '')).toLowerCase().trim();
       const appFullName = (app.lastName + ' ' + app.givenName + ' ' + (app.middleName || '')).toLowerCase().trim();
 
-      // We check if the application's full name is found within the record's full name,
-      // or vice-versa, since middle names or suffixes might be ordered differently.
-      // E.g., "dela cruz berlie jane pacure" includes "dela cruz berlie jane"
-      
       const appLast = app.lastName.toLowerCase();
       const appFirst = app.givenName.toLowerCase();
 
@@ -259,6 +256,7 @@ const crossReferenceRecords = async (uploadId: number) => {
           officialRecordId: record.id,
           matchReason: `Exact Name Match in ${record.scholarshipProgram}`
         });
+        flaggedAppIds.add(app.id);
       }
     }
   }
@@ -266,6 +264,17 @@ const crossReferenceRecords = async (uploadId: number) => {
   if (flagsToInsert.length > 0) {
     await prisma.flaggedApplication.createMany({
       data: flagsToInsert
+    });
+
+    // Update flagged application records so they are moved to the Flagged review queue
+    await prisma.application.updateMany({
+      where: {
+        id: { in: Array.from(flaggedAppIds) },
+        status: { in: ['Pending', 'Pending Review'] }
+      },
+      data: {
+        status: 'Flagged'
+      }
     });
   }
 };

@@ -1,14 +1,13 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { createAuditLog } from './auditController';
 
-const prisma = new PrismaClient();
-
 const generateTokens = (userId: number, role: string) => {
+  const normalizedRole = role.toLowerCase();
   const accessToken = jwt.sign(
-    { userId, role },
+    { userId, role: normalizedRole },
     process.env.JWT_SECRET || 'fallback_secret',
     { expiresIn: '15m' }
   );
@@ -30,10 +29,15 @@ export const login = async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await prisma.user.findUnique({ where: { email: normalizedEmail } });
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ success: false, message: 'Your account has been deactivated. Please contact the administrator.' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -60,7 +64,7 @@ export const login = async (req: Request, res: Response) => {
     res.cookie('refreshToken', refreshToken, { ...cookieOptions, maxAge: 7 * 24 * 60 * 60 * 1000, path: '/api/auth/refresh' }); // 7 days
 
     // Log the login event
-    await createAuditLog(user.id, user.role, 'USER_LOGIN', null, null, req);
+    await createAuditLog(user.id, user.role.toLowerCase(), 'USER_LOGIN', null, null, req);
 
     res.json({
       success: true,
@@ -68,7 +72,7 @@ export const login = async (req: Request, res: Response) => {
         id: user.id,
         email: user.email,
         name: user.name,
-        role: user.role,
+        role: user.role.toLowerCase(),
       }
     });
   } catch (error) {
@@ -95,9 +99,9 @@ export const refresh = async (req: Request, res: Response) => {
 
     const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
 
-    // Ensure user exists and token matches what is stored in DB
-    if (!user || user.refreshToken !== refreshToken) {
-      return res.status(401).json({ success: false, message: 'Invalid refresh token' });
+    // Ensure user exists, is active, and token matches what is stored in DB
+    if (!user || !user.isActive || user.refreshToken !== refreshToken) {
+      return res.status(401).json({ success: false, message: 'Invalid or expired refresh token' });
     }
 
     // Generate new tokens
@@ -156,14 +160,22 @@ export const getMe = async (req: Request, res: Response) => {
     // req.user is populated by authenticateToken middleware
     const user = await prisma.user.findUnique({
       where: { id: req.user?.userId },
-      select: { id: true, email: true, name: true, role: true }
+      select: { id: true, email: true, name: true, role: true, isActive: true }
     });
 
-    if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user || !user.isActive) {
+      return res.status(401).json({ success: false, message: 'User not found or account deactivated' });
     }
 
-    res.json({ success: true, user });
+    res.json({ 
+      success: true, 
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role.toLowerCase(),
+      } 
+    });
   } catch (error) {
     console.error('Get me error:', error);
     res.status(500).json({ success: false, message: 'Server error fetching profile' });

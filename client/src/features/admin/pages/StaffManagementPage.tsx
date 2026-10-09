@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { apiClient, API_URL } from '@/lib/axios';
+import { useNavigate } from 'react-router-dom';
+import { apiClient } from '@/lib/axios';
 import { toast } from 'sonner';
 import {
   Search, MoreHorizontal, UserPlus, Phone, Mail, Eye, EyeOff, Wand2, KeyRound, Ban, CheckCircle2, Copy
@@ -59,6 +59,7 @@ interface Staff {
 }
 
 export default function StaffManagementPage() {
+  const navigate = useNavigate();
   const [staffList, setStaffList] = useState<Staff[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -90,8 +91,14 @@ export default function StaffManagementPage() {
   };
 
   useEffect(() => {
+    const role = (localStorage.getItem('userRole') || '').toLowerCase();
+    if (role && role !== 'admin') {
+      toast.error('Access restricted to administrators');
+      navigate('/admin');
+      return;
+    }
     fetchStaff();
-  }, []);
+  }, [navigate]);
 
   // Form Handlers
   const handleInputChange = (field: string, value: string) => {
@@ -129,11 +136,11 @@ export default function StaffManagementPage() {
         : `${formData.firstName} ${formData.lastName}`;
 
       await apiClient.post(`/staff`, {
-        name: fullName,
-        email: formData.email,
+        name: fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
         gender: formData.gender,
-        phone: formData.phone
+        phone: formData.phone.trim()
       });
 
       toast.success('Staff account created successfully');

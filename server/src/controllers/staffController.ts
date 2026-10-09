@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db';
 import bcrypt from 'bcrypt';
 import { createAuditLog } from './auditController';
-
-const prisma = new PrismaClient();
 
 // Get all staff members
 export const getStaff = async (req: Request, res: Response) => {
@@ -38,7 +36,8 @@ export const createStaff = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Name, email, and password are required' });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existingUser) {
       return res.status(400).json({ error: 'Email is already registered' });
     }
@@ -47,11 +46,11 @@ export const createStaff = async (req: Request, res: Response) => {
 
     const newStaff = await prisma.user.create({
       data: {
-        name,
-        email,
+        name: name.trim(),
+        email: normalizedEmail,
         password: hashedPassword,
         gender,
-        phone,
+        phone: phone ? phone.trim() : null,
         role: 'staff',
         isActive: true,
       },
@@ -92,11 +91,29 @@ export const createStaff = async (req: Request, res: Response) => {
 export const updateStaff = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const staffId = parseInt(id);
+    if (isNaN(staffId)) {
+      return res.status(400).json({ error: 'Invalid staff ID' });
+    }
+
     const { name, email, gender, phone } = req.body;
+    const normalizedEmail = email ? email.trim().toLowerCase() : undefined;
+
+    if (normalizedEmail) {
+      const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
+      if (existing && existing.id !== staffId) {
+        return res.status(400).json({ error: 'Email is already in use by another account' });
+      }
+    }
 
     const updatedStaff = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: { name, email, gender, phone },
+      where: { id: staffId },
+      data: { 
+        name: name ? name.trim() : undefined, 
+        email: normalizedEmail, 
+        gender, 
+        phone: phone ? phone.trim() : undefined 
+      },
       select: {
         id: true,
         name: true,
@@ -119,11 +136,25 @@ export const updateStaff = async (req: Request, res: Response) => {
 export const toggleStaffStatus = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const staffId = parseInt(id);
+    if (isNaN(staffId)) {
+      return res.status(400).json({ error: 'Invalid staff ID' });
+    }
+
+    const adminUser = (req as any).user;
+    if (adminUser && adminUser.userId === staffId) {
+      return res.status(400).json({ error: 'You cannot suspend your own account' });
+    }
+
     const { isActive } = req.body;
 
     const updatedStaff = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: { isActive },
+      where: { id: staffId },
+      data: { 
+        isActive,
+        // Clear refresh token when suspending so active sessions are revoked
+        ...(isActive ? {} : { refreshToken: null })
+      },
       select: {
         id: true,
         name: true,
@@ -132,7 +163,6 @@ export const toggleStaffStatus = async (req: Request, res: Response) => {
     });
 
     // Add audit log
-    const adminUser = (req as any).user;
     if (adminUser) {
       await createAuditLog(
         adminUser.userId,
@@ -157,17 +187,25 @@ export const toggleStaffStatus = async (req: Request, res: Response) => {
 export const resetStaffPassword = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const staffId = parseInt(id);
+    if (isNaN(staffId)) {
+      return res.status(400).json({ error: 'Invalid staff ID' });
+    }
+
     const { newPassword } = req.body;
 
-    if (!newPassword) {
-      return res.status(400).json({ error: 'New password is required' });
+    if (!newPassword || newPassword.trim().length < 6) {
+      return res.status(400).json({ error: 'New password must be at least 6 characters' });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     const updatedUser = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data: { password: hashedPassword },
+      where: { id: staffId },
+      data: { 
+        password: hashedPassword,
+        refreshToken: null // Force re-login with new password
+      },
     });
 
     // Add audit log

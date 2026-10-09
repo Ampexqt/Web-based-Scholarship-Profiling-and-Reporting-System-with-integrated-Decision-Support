@@ -23,25 +23,21 @@ const LoginPage = () => {
     e.preventDefault();
     setError('');
     
-    // Client hasn't paid yet, block staff login with a maintenance message
-    // but allow the main admin account to access the system
-    if (email.toLowerCase() !== 'admin@zppsu.edu.ph') {
-      toast.info('System Maintenance in Progress', {
-        description: 'The staff portal is currently undergoing scheduled maintenance. Please try again later or contact the administrator.'
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
       const response: any = await apiClient.post(
         '/auth/login',
-        { email, password }
+        { email: email.trim().toLowerCase(), password }
       );
 
       if (response && response.success) {
         localStorage.setItem('isLoggedIn', 'true');
+        if (response.user) {
+          localStorage.setItem('userRole', response.user.role);
+          localStorage.setItem('userName', response.user.name || '');
+          localStorage.setItem('user', JSON.stringify(response.user));
+        }
         navigate('/admin');
       }
     } catch (err: any) {

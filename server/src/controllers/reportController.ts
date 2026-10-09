@@ -1,10 +1,8 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db';
 import XlsxPopulate from 'xlsx-populate';
 import { createAuditLog } from './auditController';
 import path from 'path';
-
-const prisma = new PrismaClient();
 
 const ANNEX_1_COURSES = [
   "BACHELOR IN PHYSICAL EDUCATION",
@@ -93,7 +91,7 @@ export const exportTesAnnex1 = async (req: Request, res: Response) => {
   try {
     const { dateRange, fromDate, toDate } = req.query;
     let whereClause: any = {
-      status: 'Approved' // Only export Approved applications for CHED Annex 1
+      status: { in: ['Approved', 'Accepted'] } // Export Approved/Accepted applications for CHED Annex 1
     };
 
     const now = new Date();

@@ -1,7 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../config/db';
 
 // Helper to extract device and OS from User-Agent
 const parseUserAgent = (ua: string) => {
@@ -64,10 +62,12 @@ export const logDuration = async (req: Request, res: Response): Promise<void> =>
   try {
     const { targetAppId, duration, notes } = req.body;
     const user = (req as any).user;
+    const userId = user?.userId || null;
+    const userRole = user?.role || null;
 
     await createAuditLog(
-      user.userId,
-      user.role,
+      userId,
+      userRole,
       'APP_VIEW_END',
       targetAppId,
       null,
@@ -88,10 +88,12 @@ export const logEvent = async (req: Request, res: Response): Promise<void> => {
   try {
     const { action, targetAppId, targetDoc, notes } = req.body;
     const user = (req as any).user;
+    const userId = user?.userId || null;
+    const userRole = user?.role || null;
 
     await createAuditLog(
-      user.userId,
-      user.role,
+      userId,
+      userRole,
       action,
       targetAppId,
       targetDoc,

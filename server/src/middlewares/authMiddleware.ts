@@ -14,8 +14,10 @@ declare global {
 }
 
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-  // Read token from HttpOnly cookie
-  const token = req.cookies?.accessToken;
+  // Read token from HttpOnly cookie or Authorization header
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : undefined;
+  const token = req.cookies?.accessToken || bearerToken;
 
   if (!token) {
     return res.status(401).json({ success: false, message: 'Access denied. No token provided.' });

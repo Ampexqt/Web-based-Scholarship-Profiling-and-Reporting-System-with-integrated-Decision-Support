@@ -1,10 +1,9 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../config/db';
+import jwt from 'jsonwebtoken';
 import fs from 'fs';
 import path from 'path';
 import { createAuditLog } from './auditController';
-
-const prisma = new PrismaClient();
 
 export const submitApplication = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -304,14 +303,16 @@ export const getApplications = async (req: Request, res: Response): Promise<void
 export const getDashboardStats = async (req: Request, res: Response): Promise<void> => {
   try {
     const total = await prisma.application.count();
-    const pending = await prisma.application.count({ where: { status: 'Pending' } });
-    const accepted = await prisma.application.count({ where: { status: 'Accepted' } });
+    const pending = await prisma.application.count({ 
+      where: { status: { in: ['Pending', 'Pending Review'] } } 
+    });
+    const approved = await prisma.application.count({ 
+      where: { status: { in: ['Approved', 'Accepted'] } } 
+    });
     const rejected = await prisma.application.count({ where: { status: 'Rejected' } });
 
     // For priority groups, we need to inspect the JSON column. 
     // This is simpler to do in memory for a small-to-medium dataset or with raw SQL.
-    // For simplicity, we'll fetch just what we need or do a full table scan if it's small.
-    // Given Prisma's limitations with JSON querying across all dialects, let's fetch all and count.
     const allApps = await prisma.application.findMany({
       select: { specialCircumstances: true }
     });
@@ -334,7 +335,8 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
       stats: {
         total,
         pending,
-        accepted,
+        accepted: approved,
+        approved,
         rejected
       },
       priorityGroups: {
@@ -360,6 +362,37 @@ export const getApplicationById = async (req: Request, res: Response): Promise<v
 
     if (!app) {
       res.status(404).json({ success: false, message: 'Application not found' });
+      return;
+    }
+
+    // Check if requester has a valid staff or admin token
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : undefined;
+    const token = req.cookies?.accessToken || bearerToken;
+    let isAuthenticatedStaff = false;
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret') as any;
+        if (decoded && decoded.role && ['admin', 'staff'].includes(decoded.role.toLowerCase())) {
+          isAuthenticatedStaff = true;
+        }
+      } catch (err) {
+        // Token invalid or expired - treat as public applicant tracking
+      }
+    }
+
+    // If unauthenticated applicant checking their status, return only safe tracking info
+    if (!isAuthenticatedStaff) {
+      res.status(200).json({
+        success: true,
+        application: {
+          referenceNumber: app.referenceNumber,
+          status: app.status,
+          createdAt: app.createdAt,
+          remarks: app.status === 'Rejected' ? app.remarks : null
+        }
+      });
       return;
     }
 

@@ -186,7 +186,7 @@ export default function ApplicationsPage() {
             <TableBody>
               {filteredApplications.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
                     No applications found matching your criteria.
                   </TableCell>
                 </TableRow>

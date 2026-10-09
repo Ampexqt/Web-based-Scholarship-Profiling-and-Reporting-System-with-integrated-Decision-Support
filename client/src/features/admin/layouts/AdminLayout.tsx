@@ -32,6 +32,8 @@ import { apiClient } from "@/lib/axios"
 export default function AdminLayout() {
   const location = useLocation()
   const navigate = useNavigate()
+  const userRole = (localStorage.getItem('userRole') || '').toLowerCase()
+  const isAdmin = userRole === 'admin'
 
   const handleLogout = async () => {
     try {
@@ -40,6 +42,9 @@ export default function AdminLayout() {
       console.error('Logout error:', error);
     } finally {
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('user');
       navigate('/login');
     }
   }
@@ -56,7 +61,7 @@ export default function AdminLayout() {
                     <img src={logo} alt="ZPPSU Logo" className="size-8 object-contain" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
-                    <span className="truncate font-semibold">ZPPSU Admin</span>
+                    <span className="truncate font-semibold">{isAdmin ? 'ZPPSU Admin' : 'ZPPSU Staff'}</span>
                     <span className="truncate text-xs text-muted-foreground">Scholarships</span>
                   </div>
                 </SidebarMenuButton>
@@ -98,12 +103,14 @@ export default function AdminLayout() {
                       <span className="text-sm group-data-[collapsible=icon]:hidden">Audit Logs</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" render={<Link to="/admin/staff-management" />} isActive={location.pathname.startsWith('/admin/staff-management')} tooltip="Staff Accounts">
-                      <Users />
-                      <span className="text-sm group-data-[collapsible=icon]:hidden">Staff Accounts</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  {isAdmin && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton size="lg" render={<Link to="/admin/staff-management" />} isActive={location.pathname.startsWith('/admin/staff-management')} tooltip="Staff Accounts">
+                        <Users />
+                        <span className="text-sm group-data-[collapsible=icon]:hidden">Staff Accounts</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

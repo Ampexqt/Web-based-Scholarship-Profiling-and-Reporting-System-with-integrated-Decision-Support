@@ -10,6 +10,7 @@ export default function DashboardPage() {
     total: 0,
     pending: 0,
     accepted: 0,
+    approved: 0,
     rejected: 0
   });
 
@@ -47,8 +48,8 @@ export default function DashboardPage() {
           className="lg:col-span-1"
         />
         <StatCard 
-          title="Accepted" 
-          value={stats.accepted} 
+          title="Approved" 
+          value={stats.approved ?? stats.accepted ?? 0} 
           icon={<CheckCircle className="w-4 h-4" />} 
           className="lg:col-span-1"
         />

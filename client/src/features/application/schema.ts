@@ -187,6 +187,22 @@ export const applicationSchema = z.object({
     return false;
   };
 
+  // PART I. ADDRESS VALIDATION
+  if (!data.sameAsCurrentAddress) {
+    if (!data.permanentBarangay || data.permanentBarangay.trim() === '') {
+      ctx.addIssue({ path: ["permanentBarangay"], message: "Permanent barangay is required", code: z.ZodIssueCode.custom });
+    }
+    if (!data.permanentMunicipality || data.permanentMunicipality.trim() === '') {
+      ctx.addIssue({ path: ["permanentMunicipality"], message: "Permanent municipality is required", code: z.ZodIssueCode.custom });
+    }
+    if (!data.permanentProvince || data.permanentProvince.trim() === '') {
+      ctx.addIssue({ path: ["permanentProvince"], message: "Permanent province is required", code: z.ZodIssueCode.custom });
+    }
+    if (!data.permanentRegion || data.permanentRegion.trim() === '') {
+      ctx.addIssue({ path: ["permanentRegion"], message: "Permanent region is required", code: z.ZodIssueCode.custom });
+    }
+  }
+
   // PART V. ACADEMIC INFORMATION (Always Required)
   if (!isFileValid(data.uploadGrades)) {
     ctx.addIssue({ path: ["uploadGrades"], message: "Grades attachment is required", code: z.ZodIssueCode.custom });

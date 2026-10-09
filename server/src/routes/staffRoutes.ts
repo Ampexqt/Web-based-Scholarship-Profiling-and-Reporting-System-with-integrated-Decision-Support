@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middlewares/authMiddleware';
+import { authenticateToken, requireRole } from '../middlewares/authMiddleware';
 import {
   getStaff,
   createStaff,
@@ -11,6 +11,7 @@ import {
 const router = Router();
 
 router.use(authenticateToken);
+router.use(requireRole(['admin']));
 
 router.get('/', getStaff);
 router.post('/', createStaff);

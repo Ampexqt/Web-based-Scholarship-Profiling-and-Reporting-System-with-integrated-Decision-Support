@@ -190,7 +190,7 @@ export default function DecisionSupportPage() {
                         </TableCell>
                         <TableCell className="text-right pr-6">
                           <Link 
-                            to={`/admin/applications/${flag.application.id}`} 
+                            to={`/admin/applications/${flag.application.referenceNumber || flag.application.id}`} 
                             className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-muted h-8 w-8 text-muted-foreground hover:text-foreground"
                           >
                             <FileText className="w-4 h-4" />

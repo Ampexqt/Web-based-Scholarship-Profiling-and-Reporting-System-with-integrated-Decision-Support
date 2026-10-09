@@ -105,6 +105,9 @@ apiClient.interceptors.response.use(
         
         // Refresh token is expired or invalid, log user out
         localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('user');
         window.location.href = '/login';
         
         return Promise.reject(refreshError);
