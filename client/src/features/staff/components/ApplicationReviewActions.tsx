@@ -117,7 +117,7 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange, isActi
                   setRemarks('');
                 }}
                 disabled={!remarks.trim()}
-                className="bg-destructive text-white hover:bg-destructive/90"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Confirm Rejection
               </AlertDialogAction>
@@ -130,7 +130,7 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange, isActi
       {isPending && (
         <AlertDialog>
           <AlertDialogTrigger 
-            className={buttonVariants({ variant: "outline", className: "gap-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 border-amber-200" })}
+            className={buttonVariants({ variant: "outline", className: "gap-2 text-destructive hover:bg-destructive/10 border-destructive/30" })}
           >
             <Flag className="w-4 h-4" />
             Flag for Review
@@ -166,7 +166,7 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange, isActi
                   setRemarks('');
                 }}
                 disabled={!remarks.trim()}
-                className="bg-amber-600 text-white hover:bg-amber-700"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
                 Flag Application
               </AlertDialogAction>
@@ -215,7 +215,7 @@ export function ApplicationReviewActions({ currentStatus, onStatusChange, isActi
                   setRemarks('');
                 }}
                 disabled={!remarks.trim()}
-                className="bg-primary text-white hover:bg-primary/90"
+                className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 Confirm Revert
               </AlertDialogAction>

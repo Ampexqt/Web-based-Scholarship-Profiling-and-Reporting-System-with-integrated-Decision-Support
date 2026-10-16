@@ -45,8 +45,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
           error: "group-[.toaster]:!bg-background group-[.toaster]:!border-destructive/50 group-[.toaster]:!text-foreground group-[.toaster]:[&_svg]:!text-destructive",
           success: "group-[.toaster]:!bg-background group-[.toaster]:!border-primary/50 group-[.toaster]:!text-foreground group-[.toaster]:[&_svg]:!text-primary",
-          warning: "group-[.toaster]:!bg-background group-[.toaster]:!border-amber-500/50 group-[.toaster]:!text-foreground [&>svg]:text-amber-500",
-          info: "group-[.toaster]:!bg-background group-[.toaster]:!border-blue-500/50 group-[.toaster]:!text-foreground [&>svg]:text-blue-500",
+          warning: "group-[.toaster]:!bg-background group-[.toaster]:!border-accent/60 group-[.toaster]:!text-foreground group-[.toaster]:[&_svg]:!text-accent-foreground dark:group-[.toaster]:[&_svg]:!text-accent",
+          info: "group-[.toaster]:!bg-background group-[.toaster]:!border-primary/40 group-[.toaster]:!text-foreground group-[.toaster]:[&_svg]:!text-primary",
         },
       }}
       {...props}

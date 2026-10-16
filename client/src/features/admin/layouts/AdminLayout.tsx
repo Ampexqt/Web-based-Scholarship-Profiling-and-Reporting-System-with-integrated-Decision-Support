@@ -146,7 +146,7 @@ export default function AdminLayout() {
                           e.preventDefault();
                           handleLogout();
                         }}
-                        className="flex-1 h-12 text-base font-semibold bg-destructive text-white hover:bg-destructive/90 shadow-sm rounded-xl">
+                        className="flex-1 h-12 text-base font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm rounded-xl">
                         Sign Out
                       </AlertDialogAction>
                     </AlertDialogFooter>

@@ -70,7 +70,7 @@ export default function AuditLogsPage() {
       case 'CREATE_STAFF_ACCOUNT': return <Badge variant="default" className="gap-1.5"><UserPlus className="w-3 h-3" />Create Staff</Badge>;
       case 'SUSPEND_STAFF_ACCOUNT': return <Badge variant="destructive" className="gap-1.5"><Ban className="w-3 h-3" />Suspend Staff</Badge>;
       case 'ACTIVATE_STAFF_ACCOUNT': return <Badge variant="default" className="gap-1.5"><CheckCircle2 className="w-3 h-3" />Activate Staff</Badge>;
-      case 'RESET_STAFF_PASSWORD': return <Badge variant="secondary" className="gap-1.5 text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900/50"><KeyRound className="w-3 h-3" />Reset Password</Badge>;
+      case 'RESET_STAFF_PASSWORD': return <Badge variant="secondary" className="gap-1.5 text-secondary-foreground border-border bg-secondary/60"><KeyRound className="w-3 h-3" />Reset Password</Badge>;
       case 'DOWNLOAD_REPORT': return <Badge variant="secondary" className="gap-1.5 text-primary border-primary/20 bg-primary/10 hover:bg-primary/20"><Download className="w-3 h-3" />Download Report</Badge>;
       default: return <Badge variant="outline" className="gap-1.5"><Activity className="w-3 h-3" />{action}</Badge>;
     }
@@ -357,7 +357,7 @@ export default function AuditLogsPage() {
 
       {/* Export Modal */}
       {isExportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-card w-full max-w-md rounded-[20px] shadow-2xl border border-border/40 overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="flex items-center justify-between p-6 pb-4">
               <h3 className="font-serif font-semibold text-xl flex items-center gap-3 text-foreground tracking-tight">

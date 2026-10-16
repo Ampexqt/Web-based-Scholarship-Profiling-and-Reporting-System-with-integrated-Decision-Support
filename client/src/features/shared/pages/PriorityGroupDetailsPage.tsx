@@ -101,10 +101,10 @@ export function PriorityGroupDetailsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case 'Pending Review': return <Badge variant="secondary" className="bg-amber-100 text-amber-800 hover:bg-amber-100 border-amber-200">Pending Review</Badge>;
-      case 'Flagged': return <Badge variant="destructive" className="bg-destructive/10 text-destructive border-destructive/20 border">Flagged</Badge>;
-      case 'Approved': return <Badge variant="default" className="bg-primary text-primary-foreground">Approved</Badge>;
-      case 'Rejected': return <Badge variant="destructive">Rejected</Badge>;
+      case 'Pending Review': return <Badge variant="secondary" className="bg-secondary hover:bg-secondary/80 text-secondary-foreground border-transparent">Pending Review</Badge>;
+      case 'Flagged': return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">Flagged</Badge>;
+      case 'Approved': return <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20">Approved</Badge>;
+      case 'Rejected': return <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20">Rejected</Badge>;
       default: return <Badge variant="outline">{status}</Badge>;
     }
   };

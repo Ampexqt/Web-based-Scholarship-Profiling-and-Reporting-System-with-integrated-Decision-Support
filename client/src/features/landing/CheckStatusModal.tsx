@@ -116,13 +116,13 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
                 {/* Current Status Node */}
                 <div className="relative z-10 flex items-start gap-4 pb-8">
                   <div className={`mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-background ring-4 ring-background ${
-                    mockStatus.status === 'Rejected' ? 'text-rose-500' :
-                    mockStatus.status === 'Approved' ? 'text-foreground' :
-                    'text-blue-500'
+                    mockStatus.status === 'Rejected' ? 'text-destructive' :
+                    mockStatus.status === 'Approved' ? 'text-primary' :
+                    'text-secondary-foreground'
                   }`}>
-                    {mockStatus.status === 'Rejected' ? <XCircle size={20} className="fill-rose-50 text-rose-500" /> :
-                     mockStatus.status === 'Approved' ? <CheckCircle2 size={20} className="fill-muted text-foreground" /> :
-                     <Clock size={20} className="fill-blue-50 text-blue-500" />}
+                    {mockStatus.status === 'Rejected' ? <XCircle size={20} className="fill-destructive/10 text-destructive" /> :
+                     mockStatus.status === 'Approved' ? <CheckCircle2 size={20} className="fill-primary/10 text-primary" /> :
+                     <Clock size={20} className="fill-secondary text-secondary-foreground" />}
                   </div>
                   
                   <div className="flex-1 pt-1">
@@ -141,8 +141,8 @@ export default function CheckStatusModal({ isOpen, onClose }: CheckStatusModalPr
                     
                     {/* Only ever show remarks to the applicant if they are explicitly Rejected */}
                     {mockStatus.remarks && mockStatus.status === 'Rejected' && (
-                      <div className="mt-3 p-3.5 bg-rose-50/50 dark:bg-rose-950/20 rounded-lg border border-rose-100 dark:border-rose-900/50 shadow-sm">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-1">Reason for Rejection</p>
+                      <div className="mt-3 p-3.5 bg-destructive/10 dark:bg-destructive/20 rounded-lg border border-destructive/20 shadow-sm">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-destructive mb-1">Reason for Rejection</p>
                         <p className="text-sm text-foreground/90 leading-relaxed">{mockStatus.remarks}</p>
                       </div>
                     )}
