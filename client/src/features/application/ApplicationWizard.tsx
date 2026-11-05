@@ -206,13 +206,14 @@ export default function ApplicationWizard() {
       const result = await response.json();
       
       if (!response.ok) {
-        throw new Error(result.message || 'Failed to submit application');
+        throw new Error(result.error || result.message || 'Failed to submit application');
       }
       
       setSuccessRefNumber(result.referenceNumber);
     } catch (error) {
       console.error('Submission error:', error);
-      alert('There was an error submitting your application. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'There was an error submitting your application. Please try again.';
+      alert(`Submission Error: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
