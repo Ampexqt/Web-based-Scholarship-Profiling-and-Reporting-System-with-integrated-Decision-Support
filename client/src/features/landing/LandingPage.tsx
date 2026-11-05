@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';
+import gymHeroBg from '../../assets/School Community Gymnasium Portrait.png';
 import CheckStatusModal from './CheckStatusModal';
 
 export default function LandingPage() {
@@ -39,11 +40,25 @@ export default function LandingPage() {
       <main className="flex-1">
         {/* Hero Section */}
         <section className="relative py-24 lg:py-32 overflow-hidden">
-          {/* Subtle background element */}
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary/40 via-background to-background" />
+          {/* Background Gymnasium Photo with Rich Maroon Tone Blend */}
+          <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none select-none">
+            <img 
+              src={gymHeroBg} 
+              alt="ZPPSU Scholarship Community in Gymnasium" 
+              className="w-full h-full object-cover object-[center_35%]"
+            />
+            {/* University maroon tone wash: warms and enriches the gymnasium photo with ZPPSU identity */}
+            <div className="absolute inset-0 bg-primary/25 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/30 via-primary/15 to-background" />
+            {/* Center radial scrim: gives the typography crisp, clean contrast while letting maroon radiate around it */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(250,248,245,0.78)_0%,_rgba(250,248,245,0.45)_55%,_transparent_100%)]" />
+            {/* Smooth top and bottom fades */}
+            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent" />
+            <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-background/90 to-transparent" />
+          </div>
           
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
-            <div className="inline-flex items-center rounded-full border border-border bg-secondary/30 px-3 py-1 text-xs font-medium text-secondary-foreground mb-8 animate-stagger-1 tracking-wider uppercase">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl text-center relative z-10">
+            <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 backdrop-blur-sm px-4 py-1 text-xs font-semibold text-primary mb-8 animate-stagger-1 tracking-wider uppercase shadow-xs">
               Academic Year 2026-2027
             </div>
             
@@ -56,12 +71,15 @@ export default function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-stagger-3" style={{ animationDelay: '0.4s' }}>
-              <Link to="/apply" className="w-full sm:w-auto inline-flex items-center justify-center rounded-sm text-sm font-medium transition-transform hover:scale-[0.98] active:scale-[0.96] bg-primary text-primary-foreground h-11 px-8">
+              <Link 
+                to="/apply" 
+                className="w-full sm:w-auto inline-flex items-center justify-center rounded-sm text-sm font-medium transition-transform hover:scale-[0.98] active:scale-[0.96] bg-primary text-primary-foreground h-11 px-8 shadow-md shadow-primary/25"
+              >
                 Start Application
               </Link>
               <button 
                 onClick={() => setStatusModalOpen(true)}
-                className="w-full sm:w-auto inline-flex items-center justify-center rounded-sm text-sm font-medium transition-colors border border-border bg-background hover:bg-secondary/50 text-foreground h-11 px-8"
+                className="w-full sm:w-auto inline-flex items-center justify-center rounded-sm text-sm font-medium transition-colors border border-primary/30 bg-background/90 hover:bg-primary/10 text-primary h-11 px-8 shadow-sm backdrop-blur-sm"
               >
                 Check Status
               </button>
