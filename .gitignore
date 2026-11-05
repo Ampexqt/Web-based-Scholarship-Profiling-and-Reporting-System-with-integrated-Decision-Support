@@ -1,2 +1,5 @@
 .agents/skills/
 skills/
+node_modules/
+playwright-report/
+test-results/
