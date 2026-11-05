@@ -1,0 +1,11 @@
+{
+  "name": "scholarship-profiling-and-reporting-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web-based Scholarship Profiling and Reporting System with Integrated Decision Support",
+  "scripts": {
+    "test:e2e": "npm --prefix client run test:e2e",
+    "test:e2e:ui": "npm --prefix client run test:e2e:ui",
+    "test:e2e:report": "npm --prefix client run test:e2e:report"
+  }
+}
