@@ -180,8 +180,15 @@ export default function ApplicationWizard() {
     try {
       const formData = new FormData();
       
+      // Clean and sanitize data before sending
+      const cleanData: Record<string, any> = { ...data };
+      
+      if (cleanData.noMiddleName) {
+        cleanData.middleName = 'N/A';
+      }
+
       // Convert nested objects/arrays to strings, and append Files directly
-      Object.entries(data).forEach(([key, value]) => {
+      Object.entries(cleanData).forEach(([key, value]) => {
         if (value instanceof FileList) {
           if (value.length > 0) {
             formData.append(key, value[0]); // Take the first file
@@ -191,8 +198,10 @@ export default function ApplicationWizard() {
         } else if (value !== undefined && value !== null) {
           if (typeof value === 'object') {
             formData.append(key, JSON.stringify(value));
+          } else if (typeof value === 'string') {
+            formData.append(key, value.trim());
           } else {
-            formData.append(key, value.toString());
+            formData.append(key, String(value));
           }
         }
       });

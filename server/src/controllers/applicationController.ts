@@ -10,24 +10,23 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     const rawData = req.body;
     const data: any = {};
     
-    // Explicit list of fields that must remain strings (to prevent numeric IDs/zips being cast to numbers by JSON.parse)
-    const preserveStringFields = [
-      'studentId', 'mobileNumber', 'currentZipCode', 'permanentZipCode',
-      'guardianContact', 'pwdIdNumber', 'soloParentIdNumber', 'ipNcipNumber',
-      'lastName', 'givenName', 'middleName', 'college', 'course', 'major',
-      'totalMembers', 'age', 'previousGwa', 'uploadDigitalSignature'
-    ];
+    // Explicit lists: Only parse JSON arrays/objects or booleans. EVERYTHING ELSE is kept strictly as a String.
+    const jsonFields = ['householdMembers'];
+    const booleanFields = ['sameAsCurrentAddress', 'noMiddleName', 'certifyTrue', 'certifyAuthentic', 'dataPrivacyConsent'];
 
-    // Parse FormData strings back to proper types (booleans, numbers, arrays)
     for (const key in rawData) {
-      if (preserveStringFields.includes(key)) {
-        data[key] = String(rawData[key]);
-      } else {
+      const rawVal = rawData[key];
+      if (jsonFields.includes(key)) {
         try {
-          data[key] = JSON.parse(rawData[key]);
-        } catch (e) {
-          data[key] = rawData[key]; // Keep as string if it's not JSON parseable
+          data[key] = typeof rawVal === 'string' ? JSON.parse(rawVal) : rawVal;
+        } catch {
+          data[key] = [];
         }
+      } else if (booleanFields.includes(key)) {
+        data[key] = rawVal === true || rawVal === 'true' || rawVal === 1 || rawVal === '1';
+      } else {
+        // Force string and trim (guarantees studentId, zipCode, mobile, age, yearLevel are never coerced to numbers)
+        data[key] = rawVal !== undefined && rawVal !== null ? String(rawVal).trim() : '';
       }
     }
 
@@ -117,7 +116,8 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
           religionOthers: data.religionOthers,
           mobileNumber: data.mobileNumber,
           emailAddress: data.emailAddress,
-          studentClassification: data.studentClassification
+          studentClassification: data.studentClassification,
+          uploadDigitalSignature: data.uploadDigitalSignature || null
         },
         addressInfo: {
           current: {
@@ -241,19 +241,6 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
         // Actually it's part of the certification step, we can store it in personalInfo or just a new column, but let's stick it in personalInfo for now to avoid schema changes
       }
     });
-
-    // Update digital signature (since we didn't define a specific JSON group for certification, let's append it to personalInfo or specialCircumstances. Let's add it to personalInfo)
-    if (data.uploadDigitalSignature) {
-      await prisma.application.update({
-        where: { id: application.id },
-        data: {
-          personalInfo: {
-            ...(application.personalInfo as any),
-            uploadDigitalSignature: data.uploadDigitalSignature
-          }
-        }
-      });
-    }
 
     res.status(201).json({
       success: true,

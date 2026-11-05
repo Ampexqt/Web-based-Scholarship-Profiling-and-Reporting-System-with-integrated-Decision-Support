@@ -2,7 +2,7 @@ import { useFormContext } from 'react-hook-form';
 import type { ApplicationFormValues } from '../schema';
 
 export default function Part2HouseholdInfoStep() {
-  const { register, watch } = useFormContext<ApplicationFormValues>();
+  const { register, watch, formState: { errors } } = useFormContext<ApplicationFormValues>();
   
   const mainSourceOfIncome = watch("mainSourceOfIncome");
   const govAssistance = watch("govAssistance");
@@ -18,7 +18,8 @@ export default function Part2HouseholdInfoStep() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Household Head Full Name <span className="text-destructive">*</span></label>
-          <input placeholder="e.g. Juan Dela Cruz" {...register("headFullName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <input placeholder="e.g. Juan Dela Cruz" maxLength={100} {...register("headFullName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.headFullName && <p className="text-xs text-destructive">{errors.headFullName.message}</p>}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Relationship to Applicant <span className="text-destructive">*</span></label>
@@ -45,7 +46,8 @@ export default function Part2HouseholdInfoStep() {
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Total Number of Household Members <span className="text-destructive">*</span></label>
-          <input type="number" {...register("totalMembers")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <input type="number" min={1} max={99} {...register("totalMembers")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.totalMembers && <p className="text-xs text-destructive">{errors.totalMembers.message}</p>}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Total Estimated Monthly Household Income <span className="text-destructive">*</span></label>
@@ -60,6 +62,7 @@ export default function Part2HouseholdInfoStep() {
             <option value="P132,000 - P219,999">P132,000 - P219,999</option>
             <option value="P220,000 and Above">P220,000 and Above</option>
           </select>
+          {errors.monthlyIncome && <p className="text-xs text-destructive">{errors.monthlyIncome.message}</p>}
         </div>
       </div>
 

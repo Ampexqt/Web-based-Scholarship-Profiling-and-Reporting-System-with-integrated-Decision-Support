@@ -56,30 +56,32 @@ export default function Part1PersonalInfoStep() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="space-y-2 md:col-span-1">
           <label className="text-sm font-medium text-foreground">Student ID No <span className="text-destructive">*</span></label>
-          <input placeholder="e.g. 23-12345" {...register("studentId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          
+          <input placeholder="e.g. 23-12345" maxLength={25} {...register("studentId")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.studentId && <p className="text-xs text-destructive">{errors.studentId.message}</p>}
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Last Name <span className="text-destructive">*</span></label>
-          <input placeholder="e.g. Dela Cruz" {...register("lastName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          
+          <input placeholder="e.g. Dela Cruz" maxLength={50} {...register("lastName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.lastName && <p className="text-xs text-destructive">{errors.lastName.message}</p>}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Given Name <span className="text-destructive">*</span></label>
-          <input placeholder="e.g. Juan" {...register("givenName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
-          
+          <input placeholder="e.g. Juan" maxLength={50} {...register("givenName")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.givenName && <p className="text-xs text-destructive">{errors.givenName.message}</p>}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Middle Name {!watch("noMiddleName") && <span className="text-destructive">*</span>}</label>
           <input 
             placeholder="e.g. Reyes"
+            maxLength={50}
             {...register("middleName")} 
             readOnly={watch("noMiddleName")}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring read-only:opacity-50 read-only:bg-muted" 
           />
+          {errors.middleName && <p className="text-xs text-destructive">{errors.middleName.message}</p>}
           <label className="flex items-center space-x-2 text-xs cursor-pointer pt-1">
             <input 
               type="checkbox" 
@@ -306,7 +308,8 @@ export default function Part1PersonalInfoStep() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-2 md:col-span-1">
               <label className="text-sm font-medium text-foreground">ZIP Code <span className="text-destructive">*</span></label>
-              <input placeholder="e.g. 7000" {...register("currentZipCode")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              <input placeholder="e.g. 7000" maxLength={4} {...register("currentZipCode")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+              {errors.currentZipCode && <p className="text-xs text-destructive">{errors.currentZipCode.message}</p>}
             </div>
           </div>
         </div>
@@ -381,7 +384,8 @@ export default function Part1PersonalInfoStep() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="space-y-2 md:col-span-1">
                 <label className="text-sm font-medium text-foreground">ZIP Code <span className="text-destructive">*</span></label>
-                <input placeholder="e.g. 7000" {...register("permanentZipCode")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                <input placeholder="e.g. 7000" maxLength={4} {...register("permanentZipCode")} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+                {errors.permanentZipCode && <p className="text-xs text-destructive">{errors.permanentZipCode.message}</p>}
               </div>
             </div>
           </div>

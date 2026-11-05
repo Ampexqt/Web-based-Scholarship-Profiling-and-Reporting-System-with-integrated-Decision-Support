@@ -27,7 +27,8 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     // -------------------------------------------------------------
     await expect(page.locator('h2')).toContainText('Part I. Personal Information');
 
-    await page.locator('input[name="studentId"]').fill(`TEST-${Date.now().toString().slice(-5)}`);
+    // Test with a purely numeric student ID (e.g. 1234) to verify number-coercion is completely eliminated
+    await page.locator('input[name="studentId"]').fill(`${Math.floor(1000 + Math.random() * 9000)}`);
     await page.locator('input[name="lastName"]').fill('Reyes');
     await page.locator('input[name="givenName"]').fill('Maria');
     await page.locator('input[name="middleName"]').fill('Santos');

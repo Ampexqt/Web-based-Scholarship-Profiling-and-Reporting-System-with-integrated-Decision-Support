@@ -3,7 +3,7 @@ import type { ApplicationFormValues } from '../schema';
 import { FileUpload } from '@/components/ui/file-upload';
 
 export default function Part5AcademicInfoStep() {
-  const { register } = useFormContext<ApplicationFormValues>();
+  const { register, formState: { errors } } = useFormContext<ApplicationFormValues>();
 
   return (
     <div className="space-y-10 animate-fade-in-up">
@@ -15,7 +15,8 @@ export default function Part5AcademicInfoStep() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Previous Semester GWA <span className="text-destructive">*</span></label>
-          <input placeholder="e.g. 90.5" {...register("previousGwa")} type="number" step="0.01" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          <input placeholder="e.g. 90.50 or 1.75" {...register("previousGwa")} type="number" step="0.01" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" />
+          {errors.previousGwa && <p className="text-xs text-destructive">{errors.previousGwa.message}</p>}
         </div>
         <div className="space-y-2">
           <label className="text-sm font-medium text-foreground">Academic Honors</label>
