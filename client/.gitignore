@@ -33,6 +33,8 @@ dist-ssr/
 
 # Testing and coverage
 /coverage
+/playwright-report/
+/test-results/
 
 # Caches
 .eslintcache
