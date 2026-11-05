@@ -10,12 +10,24 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     const rawData = req.body;
     const data: any = {};
     
+    // Explicit list of fields that must remain strings (to prevent numeric IDs/zips being cast to numbers by JSON.parse)
+    const preserveStringFields = [
+      'studentId', 'mobileNumber', 'currentZipCode', 'permanentZipCode',
+      'guardianContact', 'pwdIdNumber', 'soloParentIdNumber', 'ipNcipNumber',
+      'lastName', 'givenName', 'middleName', 'college', 'course', 'major',
+      'totalMembers', 'age', 'previousGwa', 'uploadDigitalSignature'
+    ];
+
     // Parse FormData strings back to proper types (booleans, numbers, arrays)
     for (const key in rawData) {
-      try {
-        data[key] = JSON.parse(rawData[key]);
-      } catch (e) {
-        data[key] = rawData[key]; // Keep as string if it's not JSON parseable
+      if (preserveStringFields.includes(key)) {
+        data[key] = String(rawData[key]);
+      } else {
+        try {
+          data[key] = JSON.parse(rawData[key]);
+        } catch (e) {
+          data[key] = rawData[key]; // Keep as string if it's not JSON parseable
+        }
       }
     }
 
@@ -46,7 +58,12 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
           // Local storage (development)
           const newFileName = `${referenceNumber}_${f.fieldname}${path.extname(f.originalname)}`;
           const newFilePath = path.join(applicantUploadDir, newFileName);
-          fs.renameSync(f.path, newFilePath);
+          try {
+            fs.renameSync(f.path, newFilePath);
+          } catch (err) {
+            fs.copyFileSync(f.path, newFilePath);
+            try { fs.unlinkSync(f.path); } catch (_) {}
+          }
           
           filePaths[f.fieldname] = path.relative(process.cwd(), newFilePath);
         }
@@ -77,12 +94,12 @@ export const submitApplication = async (req: Request, res: Response): Promise<vo
     const application = await prisma.application.create({
       data: {
         referenceNumber,
-        studentId: data.studentId,
-        lastName: data.lastName,
-        givenName: data.givenName,
-        middleName: data.middleName || null,
-        college: data.college,
-        course: data.course,
+        studentId: String(data.studentId || ''),
+        lastName: String(data.lastName || ''),
+        givenName: String(data.givenName || ''),
+        middleName: data.middleName ? String(data.middleName) : null,
+        college: String(data.college || ''),
+        course: String(data.course || ''),
         status: 'Pending',
         
         // Grouping the rest into JSON fields
