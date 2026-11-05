@@ -214,9 +214,14 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     // -------------------------------------------------------------
     await expect(page.locator('h2')).toContainText("Part XI. Applicant's Certification and Data Privacy Consent");
 
-    await page.locator('input[name="certifyTrue"]').check({ force: true });
-    await page.locator('input[name="certifyAuthentic"]').check({ force: true });
-    await page.locator('input[name="dataPrivacyConsent"]').check({ force: true });
+    // Click the label text for each certification checkbox (prevents double-toggle from input inside label)
+    await page.getByText('I certify that all information provided is true and correct.').click();
+    await page.getByText('I certify that all uploaded documents are authentic and valid.').click();
+    await page.getByText('I have read and understood the Data Privacy Consent and Declaration.').click();
+
+    await expect(page.locator('input[name="certifyTrue"]')).toBeChecked();
+    await expect(page.locator('input[name="certifyAuthentic"]')).toBeChecked();
+    await expect(page.locator('input[name="dataPrivacyConsent"]')).toBeChecked();
 
     // Draw digital signature on canvas
     const canvas = page.locator('canvas');
@@ -224,11 +229,11 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     await canvas.waitFor({ state: 'visible' });
     const box = await canvas.boundingBox();
     if (box) {
-      await page.mouse.move(box.x + 40, box.y + 40);
+      await page.mouse.move(box.x + 50, box.y + 50);
       await page.mouse.down();
-      await page.mouse.move(box.x + 100, box.y + 60);
-      await page.mouse.move(box.x + 160, box.y + 30);
-      await page.mouse.move(box.x + 220, box.y + 70);
+      await page.mouse.move(box.x + 100, box.y + 80);
+      await page.mouse.move(box.x + 180, box.y + 40);
+      await page.mouse.move(box.x + 240, box.y + 70);
       await page.mouse.up();
       await page.waitForTimeout(500);
     }
