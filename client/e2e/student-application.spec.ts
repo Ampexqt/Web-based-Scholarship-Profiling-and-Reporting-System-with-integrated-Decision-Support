@@ -102,8 +102,10 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     await page.locator('select[name="headRelationship"]').selectOption('Father');
     await page.locator('input[name="totalMembers"]').fill('4');
     await page.locator('select[name="monthlyIncome"]').selectOption('Less than P11,000');
-    await page.locator('input[value="Private Employment"]').check({ force: true });
-    await page.locator('input[value="None"]').check({ force: true });
+    
+    // Click the labels for radio buttons styled with sr-only
+    await page.locator('label', { hasText: 'Private Employment' }).click();
+    await page.locator('label', { hasText: 'None' }).click();
 
     await page.getByRole('button', { name: 'Next Step' }).click();
 
@@ -145,6 +147,7 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     await page.locator('select[name="householdMembers.0.civilStatus"]').selectOption('Single');
     await page.locator('select[name="householdMembers.0.education"]').selectOption('High School Undergraduate');
     await page.locator('select[name="householdMembers.0.employmentStatus"]').selectOption('Unemployed');
+    await page.locator('select[name="householdMembers.0.currentlyStudying"]').selectOption('Yes');
 
     await page.getByRole('button', { name: 'Next Step' }).click();
 
@@ -203,9 +206,9 @@ test.describe('Student Scholarship Application Submission E2E', () => {
     // -------------------------------------------------------------
     await expect(page.locator('h2')).toContainText("Part XI. Applicant's Certification and Data Privacy Consent");
 
-    await page.locator('input[name="certifyTrue"]').check();
-    await page.locator('input[name="certifyAuthentic"]').check();
-    await page.locator('input[name="dataPrivacyConsent"]').check();
+    await page.locator('input[name="certifyTrue"]').check({ force: true });
+    await page.locator('input[name="certifyAuthentic"]').check({ force: true });
+    await page.locator('input[name="dataPrivacyConsent"]').check({ force: true });
 
     // Draw digital signature on canvas
     const canvas = page.locator('canvas');
@@ -217,6 +220,7 @@ test.describe('Student Scholarship Application Submission E2E', () => {
       await page.mouse.move(box.x + 120, box.y + 60);
       await page.mouse.move(box.x + 200, box.y + 40);
       await page.mouse.up();
+      await page.waitForTimeout(500);
     }
 
     // Submit Application
