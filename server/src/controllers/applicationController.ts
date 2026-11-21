@@ -314,25 +314,96 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
       where: { status: { in: ['Approved', 'Accepted'] } } 
     });
     const rejected = await prisma.application.count({ where: { status: 'Rejected' } });
+    const flagged = await prisma.application.count({ where: { status: 'Flagged' } });
 
-    // For priority groups, we need to inspect the JSON column. 
-    // This is simpler to do in memory for a small-to-medium dataset or with raw SQL.
+    // Single query to compute priority, college, and income analytics
     const allApps = await prisma.application.findMany({
-      select: { specialCircumstances: true }
+      select: { specialCircumstances: true, college: true, householdInfo: true, parentGuardianInfo: true, status: true }
     });
 
     let pwd = 0, soloParent = 0, ip = 0, athlete = 0, indigent = 0;
+    let priorityApplicantsCount = 0;
+    const collegeDistribution: Record<string, number> = {};
+    const incomeDistribution = {
+      below10k: 0,
+      from10kTo20k: 0,
+      from20kTo40k: 0,
+      above40k: 0
+    };
+
+    // Helper to robustly classify household monthly income from either form dropdown options or raw numbers
+    const classifyIncome = (rawIncome: any): 'below10k' | 'from10kTo20k' | 'from20kTo40k' | 'above40k' | null => {
+      if (!rawIncome) return null;
+      const str = String(rawIncome).toLowerCase().trim();
+      if (!str) return null;
+
+      if (str.includes('no income') || str.includes('less than') || str.includes('< 11') || str.includes('< 10')) {
+        return 'below10k';
+      }
+      if (str.includes('11,000') || str.includes('21,999') || str.includes('11000') || str.includes('21999')) {
+        return 'from10kTo20k';
+      }
+      if (str.includes('22,000') || str.includes('43,999') || str.includes('22000') || str.includes('43999')) {
+        return 'from20kTo40k';
+      }
+      if (str.includes('44,000') || str.includes('76,999') || str.includes('77,000') || str.includes('131,999') || str.includes('132,000') || str.includes('220,000') || str.includes('above')) {
+        return 'above40k';
+      }
+
+      // Numeric fallback: extract first whole number
+      const numbers = str.match(/\d[\d,]*/g);
+      if (numbers && numbers.length > 0) {
+        const val = parseInt(numbers[0].replace(/,/g, ''), 10);
+        if (!isNaN(val)) {
+          if (val <= 11000) return 'below10k';
+          if (val <= 22000) return 'from10kTo20k';
+          if (val <= 44000) return 'from20kTo40k';
+          return 'above40k';
+        }
+      }
+
+      return 'below10k';
+    };
 
     allApps.forEach(app => {
+      // 1. Priority groups breakdown
+      let hasPriority = false;
       if (app.specialCircumstances) {
         const sc: any = typeof app.specialCircumstances === 'string' ? JSON.parse(app.specialCircumstances) : app.specialCircumstances;
-        if (sc.isPwd === 'Yes' || sc.isPwd === 'true' || sc.isPwd === true) pwd++;
-        if (sc.isSoloParent === 'Yes' || sc.isSoloParent === 'true' || sc.isSoloParent === true) soloParent++;
-        if (sc.isIp === 'Yes' || sc.isIp === 'true' || sc.isIp === true) ip++;
-        if (sc.isAthleteArtist === 'Yes' || sc.isAthleteArtist === 'true' || sc.isAthleteArtist === true) athlete++;
-        if (sc.isIndigent === 'Yes' || sc.isIndigent === 'true' || sc.isIndigent === true) indigent++;
+        if (sc.isPwd === 'Yes' || sc.isPwd === 'true' || sc.isPwd === true) { pwd++; hasPriority = true; }
+        if (sc.isSoloParent === 'Yes' || sc.isSoloParent === 'true' || sc.isSoloParent === true) { soloParent++; hasPriority = true; }
+        if (sc.isIp === 'Yes' || sc.isIp === 'true' || sc.isIp === true) { ip++; hasPriority = true; }
+        if (sc.isAthleteArtist === 'Yes' || sc.isAthleteArtist === 'true' || sc.isAthleteArtist === true) { athlete++; hasPriority = true; }
+        if (sc.isIndigent === 'Yes' || sc.isIndigent === 'true' || sc.isIndigent === true) { indigent++; hasPriority = true; }
+      }
+      if (hasPriority) priorityApplicantsCount++;
+
+      // 2. College distribution
+      if (app.college) {
+        collegeDistribution[app.college] = (collegeDistribution[app.college] || 0) + 1;
+      }
+
+      // 3. Monthly household income breakdown
+      let rawIncome = null;
+      if (app.householdInfo) {
+        const hh: any = typeof app.householdInfo === 'string' ? JSON.parse(app.householdInfo) : app.householdInfo;
+        rawIncome = hh.monthlyIncome;
+      }
+      if (!rawIncome && app.parentGuardianInfo) {
+        const pg: any = typeof app.parentGuardianInfo === 'string' ? JSON.parse(app.parentGuardianInfo) : app.parentGuardianInfo;
+        rawIncome = pg.father?.monthlyIncome || pg.mother?.monthlyIncome;
+      }
+
+      const bracket = classifyIncome(rawIncome);
+      if (bracket) {
+        incomeDistribution[bracket]++;
       }
     });
+
+    const processed = approved + rejected;
+    const approvalRate = processed > 0 ? Math.round((approved / processed) * 100) : 0;
+    const verificationProgress = total > 0 ? Math.round((processed / total) * 100) : 0;
+    const priorityShare = total > 0 ? Math.round((priorityApplicantsCount / total) * 100) : 0;
 
     res.status(200).json({
       success: true,
@@ -341,7 +412,13 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
         pending,
         accepted: approved,
         approved,
-        rejected
+        rejected,
+        flagged
+      },
+      rates: {
+        approvalRate,
+        verificationProgress,
+        priorityShare
       },
       priorityGroups: {
         pwd,
@@ -349,7 +426,9 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
         ip,
         athlete,
         indigent
-      }
+      },
+      collegeDistribution,
+      incomeDistribution
     });
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
