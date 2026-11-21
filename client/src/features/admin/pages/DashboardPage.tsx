@@ -1,67 +1,160 @@
-import StatCard from "../components/StatCard"
-import PriorityGroupWidget from "../components/PriorityGroupWidget"
-import RecentApplicationsTable from "../components/RecentApplicationsTable"
-import { Users, FileText, FileX, CheckCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 import { apiClient } from "@/lib/axios"
+import PriorityGroupHeaderRow from "../components/PriorityGroupHeaderRow"
+import CollegeBarChartCard from "../components/CollegeBarChartCard"
+import StatusDonutChartCard from "../components/StatusDonutChartCard"
+import IncomeHistogramCard from "../components/IncomeHistogramCard"
+
+interface DashboardData {
+  stats: {
+    total: number
+    pending: number
+    accepted?: number
+    approved: number
+    rejected: number
+    flagged: number
+  }
+  rates: {
+    approvalRate: number
+    verificationProgress: number
+    priorityShare: number
+  }
+  priorityGroups: {
+    pwd: number
+    soloParent: number
+    ip: number
+    athlete: number
+    indigent: number
+  }
+  collegeDistribution: Record<string, number>
+  incomeDistribution: {
+    below10k: number
+    from10kTo20k: number
+    from20kTo40k: number
+    above40k: number
+  }
+}
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState({
-    total: 0,
-    pending: 0,
-    accepted: 0,
-    approved: 0,
-    rejected: 0
-  });
+  const [data, setData] = useState<DashboardData>({
+    stats: {
+      total: 0,
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      flagged: 0
+    },
+    rates: {
+      approvalRate: 0,
+      verificationProgress: 0,
+      priorityShare: 0
+    },
+    priorityGroups: {
+      pwd: 0,
+      soloParent: 0,
+      ip: 0,
+      athlete: 0,
+      indigent: 0
+    },
+    collegeDistribution: {},
+    incomeDistribution: {
+      below10k: 0,
+      from10kTo20k: 0,
+      from20kTo40k: 0,
+      above40k: 0
+    }
+  })
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res: any = await apiClient.get('/applications/stats');
+        setIsLoading(true)
+        const res: any = await apiClient.get('/applications/stats')
         if (res.success) {
-          setStats(res.stats);
+          setData({
+            stats: {
+              total: res.stats.total || 0,
+              pending: res.stats.pending || 0,
+              approved: res.stats.approved ?? res.stats.accepted ?? 0,
+              rejected: res.stats.rejected || 0,
+              flagged: res.stats.flagged || 0
+            },
+            rates: res.rates || {
+              approvalRate: 0,
+              verificationProgress: 0,
+              priorityShare: 0
+            },
+            priorityGroups: res.priorityGroups || {
+              pwd: 0,
+              soloParent: 0,
+              ip: 0,
+              athlete: 0,
+              indigent: 0
+            },
+            collegeDistribution: res.collegeDistribution || {},
+            incomeDistribution: res.incomeDistribution || {
+              below10k: 0,
+              from10kTo20k: 0,
+              from20kTo40k: 0,
+              above40k: 0
+            }
+          })
         }
       } catch (error) {
-        console.error("Failed to fetch dashboard stats:", error);
+        console.error("Failed to fetch dashboard stats:", error)
+      } finally {
+        setIsLoading(false)
       }
-    };
-    fetchStats();
-  }, []);
+    }
+    fetchStats()
+  }, [])
+
+  const { stats, rates, priorityGroups, collegeDistribution, incomeDistribution } = data
+
   return (
-    <div className="space-y-8 animate-in fade-in-50 duration-500">
+    <div className="space-y-6">
+      {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Overview</h1>
-        <p className="text-muted-foreground mt-1">System snapshot and priority queues.</p>
+        <h1 className="text-2xl font-serif font-bold text-foreground">
+          Overview
+        </h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          Scholarship applicant profiling, priority sector queues, and institutional demographic distributions.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Total Applications" 
-          value={stats.total} 
-          icon={<FileText className="w-4 h-4" />} 
-          className="lg:col-span-1"
-        />
-        <StatCard 
-          title="Pending Verification" 
-          value={stats.pending} 
-          icon={<Users className="w-4 h-4" />} 
-          className="lg:col-span-1"
-        />
-        <StatCard 
-          title="Approved" 
-          value={stats.approved ?? stats.accepted ?? 0} 
-          icon={<CheckCircle className="w-4 h-4" />} 
-          className="lg:col-span-1"
-        />
-        <StatCard 
-          title="Rejected" 
-          value={stats.rejected} 
-          icon={<FileX className="w-4 h-4" />} 
-          className="lg:col-span-1"
-        />
-        
-        <PriorityGroupWidget />
-        <RecentApplicationsTable />
+      {/* Priority Groups Horizontal Header */}
+      <PriorityGroupHeaderRow 
+        stats={priorityGroups} 
+        totalApplicants={stats.total} 
+      />
+
+      {/* Main Analytics Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
+        {/* Left: Applications by College (Bar Chart) */}
+        <div className="xl:col-span-7 flex flex-col">
+          <CollegeBarChartCard 
+            data={collegeDistribution} 
+            total={stats.total} 
+          />
+        </div>
+
+        {/* Right: Application Status (Donut Chart) */}
+        <div className="xl:col-span-5 flex flex-col">
+          <StatusDonutChartCard 
+            stats={stats} 
+            rates={rates} 
+          />
+        </div>
+
+        {/* Bottom: Household Monthly Income Distribution */}
+        <div className="xl:col-span-12">
+          <IncomeHistogramCard 
+            distribution={incomeDistribution} 
+            total={stats.total} 
+          />
+        </div>
       </div>
     </div>
   )
