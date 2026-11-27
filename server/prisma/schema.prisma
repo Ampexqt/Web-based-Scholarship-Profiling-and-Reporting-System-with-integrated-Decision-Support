@@ -69,6 +69,7 @@ model Application {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   flags             FlaggedApplication[]
+  mcdaDecision      McdaDecision?
 }
 
 model ph_regions {
@@ -136,4 +137,30 @@ model FlaggedApplication {
   matchReason        String
   dateFlagged        DateTime @default(now())
   isResolved         Boolean  @default(false)
+}
+
+model McdaWeightConfig {
+  id              Int      @id @default(autoincrement())
+  trackKey        String   @unique
+  label           String
+  gwaWeight       Float
+  incomeWeight    Float
+  householdWeight Float
+  priorityWeight  Float
+  isActive        Boolean  @default(false)
+  updatedById     Int?
+  updatedAt       DateTime @updatedAt
+}
+
+model McdaDecision {
+  id             Int         @id @default(autoincrement())
+  applicationId  Int         @unique
+  application    Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  decision       String
+  trackKey       String
+  compositeScore Float
+  remarks        String      @db.Text
+  decidedById    Int?
+  decidedAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
