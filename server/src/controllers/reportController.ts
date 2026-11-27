@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../config/db';
 import XlsxPopulate from 'xlsx-populate';
 import { createAuditLog } from './auditController';
+import { resolveCollegeFilters } from '../utils/collegeMapper';
 import path from 'path';
 
 const ANNEX_1_COURSES = [
@@ -87,36 +88,86 @@ function normalizeCourseName(course: string): string {
   return upper;
 }
 
+const buildAnnex1WhereClause = (query: Request['query']) => {
+  const { dateRange, fromDate, toDate, colleges } = query;
+  const whereClause: Record<string, unknown> = {
+    status: { in: ['Approved', 'Accepted'] },
+  };
+
+  const now = new Date();
+
+  if (dateRange === 'today') {
+    now.setHours(0, 0, 0, 0);
+    whereClause.createdAt = { gte: now };
+  } else if (dateRange === '7days') {
+    now.setDate(now.getDate() - 7);
+    now.setHours(0, 0, 0, 0);
+    whereClause.createdAt = { gte: now };
+  } else if (dateRange === '30days') {
+    now.setDate(now.getDate() - 30);
+    now.setHours(0, 0, 0, 0);
+    whereClause.createdAt = { gte: now };
+  } else if (dateRange === 'custom' && fromDate && toDate) {
+    const from = new Date(fromDate as string);
+    const to = new Date(toDate as string);
+    to.setHours(23, 59, 59, 999);
+    whereClause.createdAt = { gte: from, lte: to };
+  }
+
+  const collegeFilter = resolveCollegeFilters(colleges);
+  if (!collegeFilter.isAllSelected && collegeFilter.matchValues.length > 0) {
+    whereClause.college = { in: collegeFilter.matchValues };
+  }
+
+  return {
+    whereClause,
+    collegeFilter,
+    dateRangeLabel: typeof dateRange === 'string' && dateRange ? dateRange : 'all',
+  };
+};
+
+export const getAnnex1Summary = async (req: Request, res: Response) => {
+  try {
+    const { whereClause, collegeFilter, dateRangeLabel } = buildAnnex1WhereClause(req.query);
+
+    const [eligibleApps, totalApproved] = await Promise.all([
+      prisma.application.findMany({
+        where: whereClause,
+        select: { college: true },
+      }),
+      prisma.application.count({
+        where: { status: { in: ['Approved', 'Accepted'] } },
+      }),
+    ]);
+
+    const collegeCounts: Record<string, number> = {};
+    for (const app of eligibleApps) {
+      if (app.college) {
+        collegeCounts[app.college] = (collegeCounts[app.college] || 0) + 1;
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      eligibleCount: eligibleApps.length,
+      totalApproved,
+      selectedColleges: collegeFilter.displayLabels,
+      dateRange: dateRangeLabel,
+      collegeCounts,
+    });
+  } catch (error) {
+    console.error('Annex 1 summary error:', error);
+    res.status(500).json({ success: false, message: 'Failed to load Annex 1 export summary' });
+  }
+};
+
 export const exportTesAnnex1 = async (req: Request, res: Response) => {
   try {
-    const { dateRange, fromDate, toDate } = req.query;
-    let whereClause: any = {
-      status: { in: ['Approved', 'Accepted'] } // Export Approved/Accepted applications for CHED Annex 1
-    };
-
-    const now = new Date();
-    
-    if (dateRange === 'today') {
-      now.setHours(0, 0, 0, 0);
-      whereClause.createdAt = { gte: now };
-    } else if (dateRange === '7days') {
-      now.setDate(now.getDate() - 7);
-      now.setHours(0, 0, 0, 0);
-      whereClause.createdAt = { gte: now };
-    } else if (dateRange === '30days') {
-      now.setDate(now.getDate() - 30);
-      now.setHours(0, 0, 0, 0);
-      whereClause.createdAt = { gte: now };
-    } else if (dateRange === 'custom' && fromDate && toDate) {
-      const from = new Date(fromDate as string);
-      const to = new Date(toDate as string);
-      to.setHours(23, 59, 59, 999);
-      whereClause.createdAt = { gte: from, lte: to };
-    }
+    const { whereClause, collegeFilter, dateRangeLabel } = buildAnnex1WhereClause(req.query);
 
     const applications = await prisma.application.findMany({
       where: whereClause,
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'asc' },
     });
 
     const templatePath = path.join(__dirname, '../../templates/annex1_zamboanga_peninsula_polytechnic_state_university - Copy.xlsm');
@@ -131,8 +182,11 @@ export const exportTesAnnex1 = async (req: Request, res: Response) => {
 
     let currentRow = 9; // Data entry starts at row 9 according to documentation
 
-    // Clear any previous test data that might be stuck in the template from row 9 down to 50
-    for (let r = 9; r <= 50; r++) {
+    // Dynamically clear any previous rows in the template from row 9 down
+    const usedRange = sheet.usedRange();
+    const maxUsedRow = usedRange ? usedRange.endCell().rowNumber() : 50;
+    const clearUntilRow = Math.max(50, maxUsedRow, 9 + applications.length + 5);
+    for (let r = 9; r <= clearUntilRow; r++) {
       for (let c = 1; c <= 22; c++) {
         sheet.row(r).cell(c).value(undefined);
       }
@@ -231,9 +285,10 @@ export const exportTesAnnex1 = async (req: Request, res: Response) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
 
-    // Add audit log for report download
+    // Add audit log for report download including college and date range filters
     const adminUser = (req as any).user;
     if (adminUser) {
+      const collegeSummary = collegeFilter.displayLabels.join(', ');
       await createAuditLog(
         adminUser.userId,
         adminUser.role,
@@ -242,7 +297,7 @@ export const exportTesAnnex1 = async (req: Request, res: Response) => {
         'TES_Annex_1',
         req,
         undefined,
-        `Downloaded CHED/UniFast Annex 1 Report`
+        `Downloaded CHED/UniFast Annex 1 Report | Colleges: ${collegeSummary} | Range: ${dateRangeLabel} | Eligible Rows: ${applications.length}`
       );
     }
 
