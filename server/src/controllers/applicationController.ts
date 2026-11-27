@@ -316,6 +316,12 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
     const rejected = await prisma.application.count({ where: { status: 'Rejected' } });
     const flagged = await prisma.application.count({ where: { status: 'Flagged' } });
 
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentIntakeCount = await prisma.application.count({
+      where: { createdAt: { gte: sevenDaysAgo } }
+    });
+
     // Single query to compute priority, college, and income analytics
     const allApps = await prisma.application.findMany({
       select: { specialCircumstances: true, college: true, householdInfo: true, parentGuardianInfo: true, status: true }
@@ -413,7 +419,8 @@ export const getDashboardStats = async (req: Request, res: Response): Promise<vo
         accepted: approved,
         approved,
         rejected,
-        flagged
+        flagged,
+        recentIntakeCount
       },
       rates: {
         approvalRate,
