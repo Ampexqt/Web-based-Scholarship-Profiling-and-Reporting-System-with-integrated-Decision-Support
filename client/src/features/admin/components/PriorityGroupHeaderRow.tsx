@@ -29,7 +29,7 @@ const PRIORITY_GROUPS = [
   },
   {
     id: "pwd",
-    label: "Person w/ Disability",
+    label: "Person with Disability",
     key: "pwd" as keyof PriorityGroupStats,
     icon: Accessibility,
   },
@@ -44,27 +44,28 @@ const PRIORITY_GROUPS = [
     label: "Sports & Arts",
     key: "athlete" as keyof PriorityGroupStats,
     icon: Trophy,
-  }
+  },
 ]
 
 export default function PriorityGroupHeaderRow({ stats, totalApplicants }: PriorityGroupHeaderRowProps) {
   const totalPriorityCount = Object.values(stats).reduce((acc, curr) => acc + curr, 0)
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-          <Users className="w-4 h-4 text-primary" />
+        <h2 className="text-sm font-semibold text-foreground flex items-center gap-2 font-sans">
+          <Users className="size-4 text-primary" />
           Priority Groups
         </h2>
         <span className="text-xs text-muted-foreground font-mono">
-          {totalPriorityCount} total flagged
+          {totalPriorityCount} classifications across {totalApplicants} applicants
         </span>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {PRIORITY_GROUPS.map((group) => {
           const count = stats[group.key] || 0
+          const share = totalApplicants > 0 ? Math.round((count / totalApplicants) * 100) : 0
 
           return (
             <Link
@@ -72,18 +73,23 @@ export default function PriorityGroupHeaderRow({ stats, totalApplicants }: Prior
               to={`priority-groups/${group.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-card border border-border hover:border-primary/50 hover:shadow-xs rounded-xl p-3.5 transition-all duration-200 flex items-center gap-3 group"
+              className="bg-card border border-border hover:border-primary/50 rounded-xl p-3.5 transition-colors flex items-center gap-3 group"
             >
               <div className="p-2.5 rounded-lg bg-muted text-primary shrink-0 group-hover:bg-primary/10 transition-colors">
-                <group.icon className="w-4 h-4" />
+                <group.icon className="size-4" />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors truncate" title={group.label}>
                   {group.label}
                 </p>
-                <p className="text-2xl font-bold font-sans text-foreground leading-tight mt-0.5">
-                  {count}
-                </p>
+                <div className="flex items-baseline gap-1.5 mt-0.5">
+                  <p className="text-2xl font-bold font-mono text-foreground leading-tight">
+                    {count}
+                  </p>
+                  <span className="text-[11px] font-mono text-muted-foreground">
+                    ({share}%)
+                  </span>
+                </div>
               </div>
             </Link>
           )
